@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.venv/
+__pycache__/
+.next/
+dist/
+.ouroboros/
+.omx/
+*.log
+/docs/reference/
+/docs/SETUP.md
+/.worktrees/
