@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U-Solve · 문서 업무 시연</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">U-SOLVE / LOCAL DEMO</p>
+      <h1>문서 업무를 설명하면<br><span>실행 전 설계와 실제 결과</span>를 구분해 보여줍니다.</h1>
+      <p>공개 설명과 가상 자료로 만든 세 가지 고정 업무 사례를 시험합니다. 다른 업무를 입력해도 처리 방식은 선택한 사례에 따릅니다. 이 화면의 결과는 실제 기업 적용이나 PDF·Word·Excel 파일 지원 판정이 아닙니다.</p>
+    </header>
+
+    <section class="workspace" aria-label="문서 업무 시연">
+      <div class="panel input-panel">
+        <div class="step-heading"><span>01</span><div><p class="eyebrow">INTAKE</p><h2>어떤 일을 해결할까요?</h2></div></div>
+        <div class="tabs" role="tablist" aria-label="시연 사례">
+          <button type="button" class="tab" data-task="meeting">회의록 후속 조치</button>
+          <button type="button" class="tab" data-task="summary">여러 문서 요약</button>
+          <button type="button" class="tab" data-task="template">양식 초안</button>
+        </div>
+        <label>해결할 업무<textarea id="job" rows="2"></textarea></label>
+        <label>현재 처리 순서<textarea id="current" rows="2"></textarea></label>
+        <label>원하는 결과와 필수 항목<textarea id="result" rows="2"></textarea></label>
+
+        <details class="conditions">
+          <summary>후보를 가르는 조건 <span>모르면 비워두세요</span></summary>
+          <label>원본·결과 형식<input id="formats" placeholder="예: Markdown 회의록 → 표"></label>
+          <label>현재 쓰는 서비스·저장 위치<input id="services" placeholder="예: Google Drive / 모름"></label>
+          <label>외부 AI 사용 정책<select id="policy"><option value="unknown">모름</option><option value="allowed">사전 정책상 가능</option><option value="denied">불가</option></select></label>
+          <label>비용·기한 한도<input id="limits" placeholder="후보 선택에 영향을 줄 때만"></label>
+        </details>
+
+        <div class="actions">
+          <button type="button" id="simulate" class="button primary">설계 미리보기</button>
+        </div>
+        <p class="hint">첫 문의는 위 세 항목만으로 시작합니다. 기술 이름·계정·실제 문서는 먼저 요구하지 않습니다.</p>
+      </div>
+
+      <div class="panel preview-panel">
+        <div class="step-heading"><span>02</span><div><p class="eyebrow">SIMULATION</p><h2>실행 전 과정도</h2></div></div>
+        <div id="preview-empty" class="empty">업무를 적고 <strong>설계 미리보기</strong>를 누르세요.</div>
+        <div id="preview" hidden>
+          <div class="status amber">시뮬레이션 · 실제 문서 처리 전</div>
+          <div id="flow" class="flow" aria-label="제안 과정"></div>
+          <div class="mock-output"><p class="eyebrow">EXPECTED OUTPUT STRUCTURE</p><div id="output-shape"></div></div>
+          <p id="assumptions" class="hint"></p>
+        </div>
+        <label class="check"><input id="approve" type="checkbox" disabled> 위 설계 방향을 승인합니다.</label>
+        <div class="divider"></div>
+        <div id="document-stage" hidden>
+          <div class="step-heading"><span>03</span><div><p class="eyebrow">FIRST RUN</p><h2>본문 시험과 검토</h2></div></div>
+          <p class="hint">설계 승인 후 공개·합성 시험 본문만 추가하세요. Codex CLI는 로그인된 계정으로 외부 모델 서비스에 본문을 보낼 수 있고 실제 공급자·모델·요금은 여기서 확인하지 못합니다. 기업 원본 문서는 이 시연에 넣지 마세요. 결과는 사람이 검토해야 합니다.</p>
+          <button type="button" id="load-demo" class="button secondary">내부 시험 문서 불러오기</button>
+          <div id="documents" class="documents"></div>
+          <label class="file-label">텍스트·Markdown 파일 추가 <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" multiple></label>
+          <button type="button" id="add-text" class="button secondary">본문 직접 붙여넣기</button>
+          <p class="hint">정책이 `모름`이면 변형되지 않은 내부 시험 문서만 실행할 수 있습니다. 추가한 공개·합성 자료는 문서별 확인과 정책상 외부 AI 사용 가능 표시가 필요합니다.</p>
+          <label class="check"><input id="transfer" type="checkbox"> 이번 실행에서 아래 문서 본문을 로그인된 Codex CLI와 그 외부 모델 서비스에 전달하는 것을 허용합니다. 각 문서의 허용도 확인하세요.</label>
+          <button type="button" id="run" class="button primary full" disabled>본문 처리 실행</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel result-panel" aria-live="polite">
+      <div class="step-heading"><span>04</span><div><p class="eyebrow">RESULT & EVIDENCE</p><h2>결과와 원문 근거</h2></div></div>
+      <div id="result-empty" class="empty">아직 실행 기록이 없습니다.</div>
+      <div id="result-box" hidden>
+        <div id="result-status" class="status blue"></div>
+        <p class="hint">이 결과는 Codex가 생성한 Markdown 초안입니다. n8n·Sheets·Excel 실행이나 회사 적합성 판정이 아니며 원문과 사람이 대조해야 합니다.</p>
+        <div id="result-content" class="rendered"></div>
+        <h3>인용 근거</h3>
+        <div id="evidence"></div>
+        <div id="warnings"></div>
+        <button type="button" id="download" class="button secondary">이번 실행 기록 내려받기</button>
+      </div>
+    </section>
+    <footer>내부 합성·공개 설명 시험 자료 · 실제 기업 문서 및 공급자 워크플로 실행 검증 전</footer>
+  </main>
+  <script src="/legacy.js" defer></script>
+</body>
+</html>

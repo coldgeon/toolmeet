@@ -1,335 +1,235 @@
 const $ = (id) => document.getElementById(id);
-const state = { task: "meeting", previewToken: null, result: null, documents: [], demoDocuments: null, running: false, previewRequest: 0, inputVersion: 0 };
-const presets = {
-  meeting: {
-    job: "회의록에서 결정과 할 일을 매번 표로 옮긴다.",
-    current: "회의록을 읽고 결정과 할 일을 찾은 뒤 표에 복사해 검토한다.",
-    result: "결정 목록과 할 일·담당자·기한·원문 근거 표",
-    format: "Markdown 회의록 → 표",
-  },
-  summary: {
-    job: "여러 문서를 한 보고서로 요약하고 출처를 남긴다.",
-    current: "각 문서를 읽고 공통점과 차이를 수동으로 비교한다.",
-    result: "공통점·차이·조건·미확인을 출처와 연결한 보고서",
-    format: "Markdown 문서 3개 → Markdown 보고서",
-  },
-  template: {
-    job: "여러 문서를 한 보고서로 요약하고 문서별 근거를 남길 도구를 평가한다.",
-    current: "후보 설명을 읽고 평가 양식과 수동으로 대조한다.",
-    result: "요약 업무에 맞는지 양식 항목별로 근거·미확인을 구분한 평가 초안",
-    format: "Markdown 양식 + 근거 문서 → Markdown 초안",
-  },
-};
+const state = { generation: 0, discoveryToken: null, simulationToken: null, busy: false };
 
-function invalidate() {
-  state.inputVersion += 1;
-  state.previewRequest += 1;
-  state.previewToken = null;
-  state.result = null;
-  $("preview").hidden = true;
-  $("preview-empty").hidden = false;
-  $("approve").checked = false;
-  $("approve").disabled = true;
-  $("document-stage").hidden = true;
-  $("transfer").checked = false;
-  $("result-box").hidden = true;
-  $("result-empty").hidden = false;
-  updateRunButton();
+function element(tag, className, value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value !== undefined) node.textContent = value;
+  return node;
 }
 
-function invalidateDocuments() {
-  state.inputVersion += 1;
-  state.result = null;
-  $("transfer").checked = false;
-  $("result-box").hidden = true;
-  $("result-empty").hidden = false;
-  updateRunButton();
+function addMessage(role) {
+  const message = element("div", `message ${role}`);
+  if (role === "assistant") message.append(element("span", "avatar", "U"));
+  const bubble = element("div", "bubble");
+  message.append(bubble);
+  $("conversation").append(message);
+  message.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  return bubble;
 }
 
-function selectTask(task) {
-  state.task = task;
-  state.documents = [];
-  state.demoDocuments = null;
-  state.result = null;
-  for (const tab of document.querySelectorAll(".tab")) {
-    tab.classList.toggle("active", tab.dataset.task === task);
-    tab.setAttribute("aria-selected", tab.dataset.task === task ? "true" : "false");
-  }
-  for (const key of ["job", "current", "result"]) $(key).value = presets[task][key];
-  $("formats").value = presets[task].format;
-  $("policy").value = "unknown";
-  $("services").value = "";
-  $("limits").value = "";
-  $("transfer").checked = false;
-  $("result-box").hidden = true;
-  $("result-empty").hidden = false;
-  renderDocuments();
-  invalidate();
+function paragraph(parent, value, className = "") {
+  const item = element("p", className, value);
+  parent.append(item);
+  return item;
 }
 
-function renderDocuments() {
-  const container = $("documents");
-  container.replaceChildren();
-  state.documents.forEach((doc, index) => {
-    const wrap = document.createElement("div");
-    wrap.className = "doc-item";
-    const row = document.createElement("div");
-    row.className = "row";
-    const name = document.createElement("input");
-    name.value = doc.name;
-    name.setAttribute("aria-label", `문서 ${index + 1} 이름`);
-    name.addEventListener("input", () => { doc.name = name.value; doc.transfer_allowed = false; doc.test_material = false; box.checked = false; materialBox.checked = false; invalidateDocuments(); });
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "remove";
-    remove.textContent = "삭제";
-    remove.addEventListener("click", () => { state.documents.splice(index, 1); renderDocuments(); invalidateDocuments(); });
-    row.append(name, remove);
-    const body = document.createElement("textarea");
-    body.value = doc.text;
-    body.setAttribute("aria-label", `문서 ${index + 1} 본문`);
-    body.addEventListener("input", () => { doc.text = body.value; doc.transfer_allowed = false; doc.test_material = false; box.checked = false; materialBox.checked = false; invalidateDocuments(); });
-    const permit = document.createElement("label");
-    permit.className = "check";
-    const box = document.createElement("input");
-    box.type = "checkbox";
-    box.checked = doc.transfer_allowed === true;
-    box.addEventListener("change", () => { doc.transfer_allowed = box.checked; updateRunButton(); });
-    permit.append(box, document.createTextNode(" 이 문서의 Codex 전송 허용"));
-    const material = document.createElement("label");
-    material.className = "check";
-    const materialBox = document.createElement("input");
-    materialBox.type = "checkbox";
-    materialBox.checked = doc.test_material === true;
-    materialBox.addEventListener("change", () => { doc.test_material = materialBox.checked; updateRunButton(); });
-    material.append(materialBox, document.createTextNode(" 공개·합성 시험 자료이며 기업 비공개 원본이 아님을 확인"));
-    wrap.append(row, body, material, permit);
-    container.append(wrap);
+function list(parent, values, className = "simple-list") {
+  const collection = element("ul", className);
+  values.forEach((value) => collection.append(element("li", "", value)));
+  parent.append(collection);
+  return collection;
+}
+
+function button(parent, label, callback, style = "") {
+  const item = element("button", `action ${style}`, label);
+  item.type = "button";
+  item.addEventListener("click", callback);
+  parent.append(item);
+  return item;
+}
+
+function setJourney(step) {
+  document.querySelectorAll(".journey li").forEach((item, index) => {
+    item.classList.toggle("done", index < step - 1);
+    item.classList.toggle("active", index === step - 1);
   });
-  updateRunButton();
 }
 
-async function simulate() {
-  const intake = getIntake();
-  if (Object.values(intake).some((value) => !value)) {
-    alert("첫 문의 3항목을 모두 입력하세요.");
+async function post(path, payload) {
+  const response = await fetch(path, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "요청을 처리하지 못했습니다.");
+  return data;
+}
+
+function showError(message) {
+  const bubble = addMessage("assistant");
+  bubble.append(element("strong", "", "U-Solve"));
+  paragraph(bubble, message);
+}
+
+function showMatches(data, generation) {
+  const bubble = addMessage("assistant");
+  bubble.append(element("strong", "", "U-Solve · 저장된 맥락 검색"));
+  bubble.append(element("h2", "stage-title", data.message));
+  paragraph(bubble, `현재 ${data.catalog_count}건의 요약 컨텍스트에서 검색했습니다. ${data.retrieval}`, "muted");
+  if (!data.matches.length) {
+    paragraph(bubble, data.next_question, "notice");
+    button(bubble, "설명을 더 적기", () => $("query").focus(), "secondary");
     return;
   }
-  const requestId = ++state.previewRequest;
-  try {
-    const response = await fetch("/api/preview", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ task: state.task, intake, metadata: getMetadata() }),
+  const cards = element("div", "cards");
+  data.matches.forEach((match) => {
+    const card = element("article", "solution-card");
+    card.append(element("span", "tag", match.fit_status));
+    card.append(element("h3", "", match.title));
+    paragraph(card, match.summary);
+    paragraph(card, `입력: ${match.input}  →  출력: ${match.output}`, "micro");
+    card.append(element("div", "section-label", "저장된 원본 설명의 단계"));
+    list(card, match.source_steps, "method-list");
+    card.append(element("div", "section-label", "U-Solve가 제안하는 보완 · 미검증"));
+    list(card, match.proposed_steps, "method-list");
+    paragraph(card, match.adaptation, "notice");
+    if (match.condition_issues.length) list(card, match.condition_issues, "simple-list issues");
+    paragraph(card, `“${match.evidence_quote}”`, "evidence");
+    paragraph(card, `${match.evidence_status} · 확인 ${match.checked_at} · 검색어: ${match.matched_terms.join(", ")}`, "micro");
+    const actions = element("div", "action-row");
+    const action = button(actions, match.condition_issues.length ? "가정된 과정도 보기 →" : "이 방법의 전체 흐름 보기 →", () => {
+      if (generation === state.generation) simulate(data.discovery_token, match.id, generation);
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "미리보기를 만들지 못했습니다.");
-    if (requestId !== state.previewRequest) return;
-    const flow = $("flow");
-    flow.replaceChildren();
-    data.steps.forEach((step, index) => {
-      if (index) {
-        const arrow = document.createElement("span");
-        arrow.className = "arrow";
-        arrow.textContent = "→";
-        flow.append(arrow);
-      }
-      const node = document.createElement("div");
-      node.className = "flow-step";
-      node.textContent = step;
-      flow.append(node);
-    });
-    const table = document.createElement("table");
-    const header = document.createElement("tr");
-    data.columns.forEach((column) => { const cell = document.createElement("th"); cell.textContent = column; header.append(cell); });
-    table.append(header);
-    const blanks = document.createElement("tr");
-    data.columns.forEach(() => { const cell = document.createElement("td"); cell.textContent = "—"; blanks.append(cell); });
-    table.append(blanks);
-    $("output-shape").replaceChildren(table);
-    $("assumptions").textContent = data.assumptions.join("\n");
-    $("preview-empty").hidden = true;
-    $("preview").hidden = false;
-    state.previewToken = data.preview_token;
-    $("approve").disabled = false;
-    $("approve").checked = false;
-    updateRunButton();
-  } catch (error) { alert(error.message); }
+    action.disabled = match.blocked;
+    if (match.blocked) paragraph(card, "입력한 필수 조건과 충돌해 이 후보의 시뮬레이션·연결 안내를 중단했습니다.", "micro");
+    card.append(actions);
+    cards.append(card);
+  });
+  bubble.append(cards);
+  setJourney(3);
 }
 
-function getIntake() {
-  return Object.fromEntries(["job", "current", "result"].map((key) => [key, $(key).value.trim()]));
-}
-
-function getMetadata() {
-  return Object.fromEntries(["formats", "services", "policy", "limits"].map((key) => [key, $(key).value.trim()]));
-}
-
-function documentsAreBundledDemo() {
-  if (!state.demoDocuments || state.documents.length !== state.demoDocuments.length) return false;
-  return state.documents.every((doc, index) => doc.name === state.demoDocuments[index].name && doc.text === state.demoDocuments[index].text);
-}
-
-function updateRunButton() {
-  const minimum = state.task === "meeting" ? 1 : state.task === "summary" ? 3 : 2;
-  $("run").disabled = state.running || !state.previewToken || !$("approve").checked || !$("transfer").checked
-    || $("policy").value === "denied" || ($("policy").value === "unknown" && !documentsAreBundledDemo())
-    || state.documents.length < minimum
-    || state.documents.some((doc) => !doc.name.trim() || !doc.text.trim() || doc.test_material !== true || doc.transfer_allowed !== true);
-}
-
-async function loadDemo() {
+async function discover(query) {
+  if (state.busy) return;
+  const value = query.trim();
+  if (value.length < 8) return showError("하려는 일과 원하는 결과를 조금 더 구체적으로 적어 주세요.");
+  state.generation += 1;
+  const generation = state.generation;
+  state.discoveryToken = null;
+  state.simulationToken = null;
+  document.querySelectorAll("#conversation .action").forEach((item) => { item.disabled = true; });
+  paragraph(addMessage("user"), value);
+  state.busy = true;
+  $("search").disabled = true;
+  setJourney(2);
   try {
-    const response = await fetch(`/api/demo?task=${state.task}`);
-    if (!response.ok) throw new Error("시험 문서를 읽지 못했습니다.");
-    const data = await response.json();
-    state.documents = data.documents.map((doc) => ({ ...doc, origin: "bundled_demo", test_material: true, transfer_allowed: false }));
-    state.demoDocuments = data.documents;
-    renderDocuments();
-    invalidateDocuments();
-  } catch (error) { alert(error.message); }
+    const data = await post("/api/discover", { query: value });
+    if (generation !== state.generation) return;
+    state.discoveryToken = data.discovery_token;
+    showMatches(data, generation);
+  } catch (error) { showError(error.message); }
+  finally { state.busy = false; $("search").disabled = false; }
 }
 
-async function addFiles(files) {
-  for (const file of files) {
-    if (!/\.(md|txt)$/i.test(file.name)) {
-      alert("현재 시연은 .md 또는 .txt 본문만 읽습니다. PDF·Docs/Word·Excel은 별도 검증 대상입니다.");
-      continue;
-    }
-    if (state.documents.length >= 5) { alert("한 번에 최대 5개 문서만 넣을 수 있습니다."); break; }
-    const content = await file.text();
-    if (state.running) continue;
-    state.documents.push({ name: file.name, text: content, origin: "file_upload", test_material: false, transfer_allowed: false });
-  }
-  $("file-input").value = "";
-  renderDocuments();
-  invalidateDocuments();
-}
-
-function showResult(data) {
-  state.result = data;
-  $("result-status").textContent = `${data.status} · ${new Date(data.executed_at).toLocaleString("ko-KR")}`;
-  renderMarkdown(data.content, $("result-content"));
-  const evidence = $("evidence");
-  evidence.replaceChildren();
-  for (const item of data.evidence) {
-    const block = document.createElement("div");
-    block.className = `evidence-item${item.verified ? "" : " bad"}`;
-    const source = data.inputs[Number(item.source_id) - 1]?.name || `문서 ${item.source_id}`;
-    block.textContent = `${item.verified ? "✓" : "!"} ${source} — “${item.quote}”`;
-    evidence.append(block);
-  }
-  $("warnings").replaceChildren();
-  for (const warning of data.warnings) {
-    const line = document.createElement("p");
-    line.textContent = `확인 필요: ${warning}`;
-    $("warnings").append(line);
-  }
-  $("result-empty").hidden = true;
-  $("result-box").hidden = false;
-  $("result-box").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function renderMarkdown(source, container) {
-  container.replaceChildren();
-  const lines = source.split(/\r?\n/);
-  for (let index = 0; index < lines.length;) {
-    const line = lines[index].trim();
-    if (!line) { index += 1; continue; }
-    if (line.startsWith("|") && index + 1 < lines.length && /^\|?[\s:|\-]+\|?$/.test(lines[index + 1].trim())) {
-      const table = document.createElement("table");
-      const rows = [];
-      while (index < lines.length && lines[index].trim().startsWith("|")) {
-        rows.push(lines[index].trim()); index += 1;
-      }
-      rows.forEach((row, rowIndex) => {
-        if (rowIndex === 1 && /^\|?[\s:|\-]+\|?$/.test(row)) return;
-        const tr = document.createElement("tr");
-        row.replace(/^\|/, "").replace(/\|$/, "").split("|").forEach((cell) => {
-          const element = document.createElement(rowIndex === 0 ? "th" : "td");
-          element.textContent = cell.trim().replace(/\*\*/g, "");
-          tr.append(element);
-        });
-        table.append(tr);
-      });
-      container.append(table);
-      continue;
-    }
-    const heading = line.match(/^(#{1,4})\s+(.+)$/);
-    if (heading) {
-      const element = document.createElement(`h${Math.min(heading[1].length + 1, 4)}`);
-      element.textContent = heading[2];
-      container.append(element); index += 1; continue;
-    }
-    if (/^[-*]\s+/.test(line)) {
-      const list = document.createElement("ul");
-      while (index < lines.length && /^[-*]\s+/.test(lines[index].trim())) {
-        const item = document.createElement("li");
-        item.textContent = lines[index].trim().replace(/^[-*]\s+/, "").replace(/\*\*/g, "");
-        list.append(item); index += 1;
-      }
-      container.append(list); continue;
-    }
-    const paragraph = document.createElement("p");
-    paragraph.textContent = line.replace(/\*\*/g, "");
-    container.append(paragraph); index += 1;
-  }
-}
-
-async function run() {
-  if ($("run").disabled) return;
-  const button = $("run");
-  state.running = true;
-  const requestId = state.previewRequest;
-  const inputVersion = state.inputVersion;
-  const payload = {
-    task: state.task, documents: state.documents.map((doc) => ({ ...doc })), intake: getIntake(),
-    metadata: getMetadata(), preview_token: state.previewToken,
-    approved: $("approve").checked, transfer_allowed: $("transfer").checked,
-  };
-  document.querySelectorAll("button,input,textarea,select").forEach((element) => { element.disabled = true; });
-  button.disabled = true;
-  button.textContent = "본문 처리 중… 최대 3분";
+async function simulate(discoveryToken, solutionId, generation) {
+  if (state.busy) return;
+  state.busy = true;
   try {
-    const response = await fetch("/api/run", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+    const data = await post("/api/simulate", { discovery_token: discoveryToken, solution_id: solutionId });
+    if (generation !== state.generation) return;
+    state.simulationToken = data.simulation_token;
+    const bubble = addMessage("assistant");
+    bubble.append(element("strong", "", "U-Solve · 전체 과정 시뮬레이션"));
+    bubble.append(element("h2", "stage-title", data.title));
+    paragraph(bubble, data.status, "muted");
+    paragraph(bubble, `사용자 업무: ${data.query}`, "muted");
+    paragraph(bubble, `저장된 설명의 입력 ${data.input} → 출력 ${data.output}`, "muted");
+    bubble.append(element("div", "section-label", "저장된 원본 설명의 흐름"));
+    const sourceFlow = element("div", "flow");
+    data.source_steps.forEach((step, index) => {
+      if (index) sourceFlow.append(element("span", "flow-arrow", "→"));
+      const node = element("div", "flow-node");
+      node.append(element("strong", "", `원본 ${index + 1}`), element("span", "", step));
+      sourceFlow.append(node);
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "처리에 실패했습니다.");
-    if (requestId === state.previewRequest && inputVersion === state.inputVersion) showResult(data);
-  } catch (error) { alert(error.message); }
-  finally {
-    state.running = false;
-    state.previewToken = null;
-    document.querySelectorAll("button,input,textarea,select").forEach((element) => { element.disabled = false; });
-    $("approve").disabled = true;
-    button.textContent = "본문 처리 실행";
-    updateRunButton();
-  }
+    bubble.append(sourceFlow);
+    bubble.append(element("div", "section-label", "U-Solve 보완 제안 · 아직 도구에 연결하지 않음"));
+    const proposedFlow = element("div", "flow");
+    data.proposed_steps.forEach((step, index) => {
+      if (index) proposedFlow.append(element("span", "flow-arrow", "→"));
+      const node = element("div", "flow-node proposal");
+      node.append(element("strong", "", `보완 ${index + 1}`), element("span", "", step));
+      proposedFlow.append(node);
+    });
+    bubble.append(proposedFlow);
+    bubble.append(element("div", "section-label", "아직 비어 있는 예상 결과"));
+    const blank = element("div", "blank");
+    Object.entries(data.blank_output).forEach(([label, value]) => {
+      const cell = element("div");
+      cell.append(element("b", "", label), element("span", "", value));
+      blank.append(cell);
+    });
+    bubble.append(blank);
+    bubble.append(element("div", "section-label", "확인되지 않은 조건"));
+    list(bubble, data.assumptions);
+    paragraph(bubble, "이 그림은 저장된 설명으로 만든 가정입니다. 실제 설치·문서 처리 결과가 아닙니다. 방향이 맞는지 먼저 확인해 주세요.", "notice");
+    const policyField = element("div", "policy-field");
+    const policyLabel = element("label", "", "연결 안내 전 확인 · 회사에서 외부 AI 사용이 가능한가요?");
+    policyLabel.htmlFor = `policy-${generation}`;
+    const policySelect = element("select");
+    policySelect.id = `policy-${generation}`;
+    [["unknown", "모름 · 연결 보류"], ["allowed", "가능 · 별도 문서 전송 허용은 아직 아님"], ["denied", "불가 · 이 후보 제외"]].forEach(([value, label]) => {
+      const option = element("option", "", label);
+      option.value = value;
+      policySelect.append(option);
+    });
+    policyField.append(policyLabel, policySelect);
+    bubble.append(policyField);
+    const actions = element("div", "action-row");
+    button(actions, data.condition_issues.length ? "가정이 맞아요 · 원본 근거 보기" : "방향이 맞아요 · 연결 방법 보기", () => confirm(data.simulation_token, generation, policySelect.value));
+    button(actions, "수정할게요", () => {
+      paragraph(addMessage("assistant"), "원하는 입력·출력이나 바꾸고 싶은 단계를 적어 다시 검색해 주세요. 이전 과정도는 실행되지 않았습니다.");
+      $("query").focus();
+    }, "secondary");
+    bubble.append(actions);
+    setJourney(4);
+  } catch (error) { showError(error.message); }
+  finally { state.busy = false; }
 }
 
-function download() {
-  if (!state.result) return;
-  const blob = new Blob([JSON.stringify(state.result, null, 2)], { type: "application/json" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `u-solve-${state.task}-${Date.now()}.json`;
-  link.click();
-  URL.revokeObjectURL(link.href);
+async function confirm(token, generation, policy) {
+  if (state.busy) return;
+  state.busy = true;
+  try {
+    const data = await post("/api/confirm", { simulation_token: token, confirmed: true, external_ai_policy: policy });
+    if (generation !== state.generation) return;
+    if (data.connection_status) {
+      const bubble = addMessage("assistant");
+      bubble.append(element("strong", "", "U-Solve · 연결 보류"));
+      paragraph(bubble, data.guidance, "notice");
+      if (data.condition_issues.length) list(bubble, data.condition_issues, "simple-list issues");
+      return;
+    }
+    document.querySelectorAll("#conversation .action").forEach((item) => { item.disabled = true; });
+    const bubble = addMessage("assistant");
+    const evidenceOnly = data.condition_issues.length > 0;
+    bubble.append(element("strong", "", evidenceOnly ? "U-Solve · 적합성 미확인 · 원본 근거 확인" : "U-Solve · 연결 안내"));
+    bubble.append(element("h2", "stage-title", evidenceOnly ? `${data.title}의 지원 범위를 확인하세요` : `${data.title}을(를) 살펴볼 차례입니다`));
+    paragraph(bubble, data.adaptation);
+    bubble.append(element("div", "section-label", evidenceOnly ? "원본에서 확인할 준비 조건" : "시작 전에 필요한 것"));
+    list(bubble, data.requirements);
+    bubble.append(element("div", "section-label", "아직 확인할 것"));
+    list(bubble, [...data.condition_issues, ...data.unknowns]);
+    paragraph(bubble, data.guidance, "notice");
+    paragraph(bubble, `${data.evidence_status} · ${data.execution_status}`, "muted");
+    const link = element("a", "source-link", data.condition_issues.length ? "원본 근거 확인 ↗" : "원본 저장소·가이드 열기 ↗");
+    link.href = data.source_url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    bubble.append(link);
+    setJourney(5);
+  } catch (error) { showError(error.message); }
+  finally { state.busy = false; }
 }
 
-document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => selectTask(button.dataset.task)));
-for (const key of ["job", "current", "result", "formats", "services", "policy", "limits"]) $(key).addEventListener("input", invalidate);
-$("approve").addEventListener("change", () => { $("document-stage").hidden = !$("approve").checked; updateRunButton(); });
-$("transfer").addEventListener("change", updateRunButton);
-$("load-demo").addEventListener("click", loadDemo);
-$("simulate").addEventListener("click", simulate);
-$("file-input").addEventListener("change", (event) => addFiles(event.target.files));
-$("add-text").addEventListener("click", () => {
-  if (state.documents.length >= 5) return alert("한 번에 최대 5개 문서만 넣을 수 있습니다.");
-  state.documents.push({ name: `붙여넣기-${state.documents.length + 1}.txt`, text: "", origin: "pasted_text", test_material: false, transfer_allowed: false });
-  renderDocuments(); invalidateDocuments();
+$("query-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  discover($("query").value);
 });
-$("run").addEventListener("click", run);
-$("download").addEventListener("click", download);
-selectTask("meeting");
+document.querySelectorAll("[data-example]").forEach((item) => item.addEventListener("click", () => {
+  $("query").value = item.dataset.example;
+  $("query").focus();
+}));
+fetch("/api/catalog").then((response) => response.json()).then((data) => {
+  $("catalog-count").textContent = `저장된 설명 ${data.count}건`;
+}).catch(() => { $("catalog-count").textContent = "저장소 확인 실패"; });

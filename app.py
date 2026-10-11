@@ -20,6 +20,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from solution_store import BY_ID, CATALOG, assess_constraints, preview as solution_preview, search as search_solutions
+
 
 ROOT = Path(__file__).resolve().parent
 WEB = ROOT / "web"
@@ -30,8 +32,18 @@ TASKS = {
     "template": ["evaluation_template.md", "workflow_summary.md"],
 }
 PREVIEWS: dict[str, tuple[str, float]] = {}
+DISCOVERIES: dict[str, tuple[str, list[str], float]] = {}
+SIMULATIONS: dict[str, tuple[str, str, float]] = {}
 PREVIEW_LOCK = threading.Lock()
 PREVIEW_TTL = 900
+
+
+def prune_tokens(now: float) -> None:
+    """Drop expired in-memory local-demo tokens while holding PREVIEW_LOCK."""
+    for collection in (PREVIEWS, DISCOVERIES, SIMULATIONS):
+        for token, value in list(collection.items()):
+            if value[-1] < now:
+                del collection[token]
 SCHEMA = {
     "type": "object",
     "properties": {
@@ -220,7 +232,15 @@ class Handler(BaseHTTPRequestHandler):
             docs = [{"name": name, "text": (DEMO / name).read_text(encoding="utf-8")} for name in TASKS[task]]
             self.send_json({"documents": docs, "synthetic": True})
             return
-        assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"), "/style.css": ("style.css", "text/css")}
+        if parsed.path == "/api/catalog":
+            self.send_json({"count": len(CATALOG), "scope": "저장된 공개 설명 요약·정적 확인만 검색", "last_checked": "2026-10-11"})
+            return
+        assets = {
+            "/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
+            "/discover.css": ("discover.css", "text/css"),
+            "/demo": ("legacy.html", "text/html"), "/legacy.js": ("legacy.js", "text/javascript"),
+            "/style.css": ("style.css", "text/css"),
+        }
         if parsed.path not in assets:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -233,7 +253,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def do_POST(self) -> None:
-        if self.path not in ("/api/preview", "/api/run"):
+        if self.path not in ("/api/discover", "/api/simulate", "/api/confirm", "/api/preview", "/api/run"):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
@@ -243,14 +263,72 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             if not isinstance(data, dict):
                 raise ValueError("요청 형식이 올바르지 않습니다.")
+            if self.path == "/api/discover":
+                query = data.get("query")
+                if not isinstance(query, str) or not 8 <= len(query.strip()) <= 2000:
+                    raise ValueError("하려는 일을 8~2000자로 설명하세요.")
+                matches = search_solutions(query)
+                token = secrets.token_urlsafe(24)
+                with PREVIEW_LOCK:
+                    now = time.monotonic()
+                    prune_tokens(now)
+                    DISCOVERIES[token] = (query.strip(), [item["id"] for item in matches if not item["blocked"]], now + PREVIEW_TTL)
+                self.send_json({
+                    "discovery_token": token, "query": query.strip(), "matches": matches,
+                    "catalog_count": len(CATALOG), "retrieval": "저장된 텍스트 키워드 검색 · 외부 AI 호출 없음",
+                    "message": "저장된 설명에서 관련 맥락을 찾았습니다." if matches else "저장된 설명에서 입력 문구와 일치하는 검색어를 찾지 못했습니다.",
+                    "next_question": None if matches else "입력 자료와 원하는 결과 형식을 더 구체적으로 적어 다시 검색해 주세요. 검색 결과 없음은 적합한 해법이 없다는 판정이 아닙니다.",
+                })
+                return
+            if self.path == "/api/simulate":
+                discovery_token, solution_id = data.get("discovery_token"), data.get("solution_id")
+                with PREVIEW_LOCK:
+                    found = DISCOVERIES.get(discovery_token) if isinstance(discovery_token, str) else None
+                if not found or found[2] < time.monotonic() or solution_id not in found[1]:
+                    raise ValueError("현재 검색 결과에서 방법을 다시 선택하세요.")
+                token = secrets.token_urlsafe(24)
+                with PREVIEW_LOCK:
+                    SIMULATIONS[token] = (found[0], solution_id, time.monotonic() + PREVIEW_TTL)
+                self.send_json({"simulation_token": token, **solution_preview(found[0], BY_ID[solution_id])})
+                return
+            if self.path == "/api/confirm":
+                token = data.get("simulation_token")
+                if data.get("confirmed") is not True:
+                    raise ValueError("시뮬레이션 방향 확인이 필요합니다.")
+                policy = data.get("external_ai_policy")
+                if policy not in ("allowed", "denied", "unknown"):
+                    raise ValueError("외부 AI 사용 가능 여부를 확인하세요.")
+                with PREVIEW_LOCK:
+                    selected = SIMULATIONS.get(token) if isinstance(token, str) else None
+                if not selected or selected[2] < time.monotonic():
+                    raise ValueError("시뮬레이션을 다시 확인하세요.")
+                record = BY_ID[selected[1]]
+                blocked, issues = assess_constraints(selected[0], record, policy)
+                if blocked or (record["external_ai"] and policy != "allowed"):
+                    self.send_json({
+                        "title": record["title"], "source_url": None,
+                        "connection_status": "blocked" if blocked else "policy_unknown",
+                        "guidance": "외부 AI 사용 불가 조건과 충돌합니다. 다른 후보를 찾아야 합니다." if blocked else "외부 AI 사용 가능 여부를 확인한 뒤 연결 안내를 진행하세요.",
+                        "condition_issues": issues,
+                    })
+                    return
+                with PREVIEW_LOCK:
+                    SIMULATIONS.pop(token, None)
+                self.send_json({
+                    "title": record["title"], "source_url": record["source_url"],
+                    "requirements": record["requirements"], "adaptation": record["adaptation"],
+                    "unknowns": record["unknowns"], "evidence_status": record["evidence_status"],
+                    "condition_issues": issues,
+                    "guidance": "형식 지원이 확인되기 전에는 연결·적용하지 마세요. 원본의 현재 지원 범위와 권한·비용을 먼저 확인하세요." if issues else "공개 출처의 현재 지원·권한·비용을 확인하고 시험용 복제본에서 검증한 뒤 적용 여부를 결정하세요.",
+                    "execution_status": "형식 지원 미확인 · 연결 보류" if issues else "저장소 연결·설치·업무 도구 실행 전",
+                })
+                return
             task, intake, metadata = validate_preview(data)
             if self.path == "/api/preview":
                 token = secrets.token_urlsafe(24)
                 with PREVIEW_LOCK:
                     now = time.monotonic()
-                    for old, (_, deadline) in list(PREVIEWS.items()):
-                        if deadline < now:
-                            del PREVIEWS[old]
+                    prune_tokens(now)
                     PREVIEWS[token] = (request_signature(task, intake, metadata), now + PREVIEW_TTL)
                 self.send_json({"preview_token": token, **build_preview(task, intake, metadata)})
                 return
