@@ -18,3 +18,11 @@
 - 업무별 AI 도구 추천과 AI 소식 정리의 통합 여부는 미정이다.
 
 작업 지침은 [AGENTS.md](AGENTS.md)에 있다. 비밀키와 로그인 정보는 저장소에 넣지 않는다.
+
+## 페르소나 담당 작업 트리
+
+- 기본 기획 작업: `main` 브랜치의 `/home/s2608/projects/u-solve`.
+- 별도 페르소나 작업: `agent/persona-intake` 브랜치의 `/home/s2608/projects/u-solve/.worktrees/persona-intake`.
+- 새 에이전트에는 별도 작업 트리 경로와 [인계 문서](docs/PERSONA_AGENT.md)를 전달한다. 두 브랜치의 변경은 검토 후 합친다.
+
+GitHub 원격 저장소는 연결이 확인된 뒤 비공개로 생성할 예정이다. 현재 로컬 커밋과 작업 트리만 준비됐다.

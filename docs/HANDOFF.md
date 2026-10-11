@@ -2,9 +2,10 @@
 
 ## 2026-10-11 GitHub 저장소·페르소나 작업 트리 준비
 
-- 사용자가 GitHub 저장소 정리와 새 페르소나 담당 에이전트용 별도 작업 트리를 요청했다. 로컬 저장소에는 아직 첫 커밋·원격이 없고 `gh` CLI 및 GitHub 토큰·Git 자격 증명 설정도 확인되지 않았다. GitHub 플러그인은 발견했으나 설치·연결은 미확인이다.
+- 사용자가 GitHub 저장소 정리와 새 페르소나 담당 에이전트용 별도 작업 트리를 요청했다. 첫 기획 커밋 `be05df0`, 문서 권한 정리 커밋 `a44dafc`를 로컬 `main`에 만들었다. `agent/persona-intake` 브랜치와 `/home/s2608/projects/u-solve/.worktrees/persona-intake` 작업 트리를 만들었고 두 트리가 깨끗한 상태임을 확인했다.
 - README.md를 현재 기획 저장소 안내로 정리하고 `docs/PERSONA_AGENT.md`를 추가했다. 과거 신청 원본·기획 자료인 `docs/reference/`, 개인 WSL 설정인 `docs/SETUP.md`, 중첩 작업 트리인 `.worktrees/`를 Git 추적에서 제외했다. 로컬 자료는 삭제하지 않았다.
-- 다음 작업은 안전한 파일 목록 검증, 첫 로컬 커밋, 페르소나 브랜치·작업 트리 생성, GitHub 연결 확인 후 비공개 원격 저장소 생성과 푸시다. 원격이 연결되기 전에는 GitHub에 업로드됐다고 보고하지 않는다.
+- 검증: 스테이징 파일 18개와 `git diff --cached --check`, 두 작업 트리 상태, 인계 문서 존재를 확인했다. `docs/reference/`와 `docs/SETUP.md`는 로컬에 남고 Git 추적에서 빠졌다.
+- 남은 문제와 다음 작업: GitHub 원격은 아직 없다. `gh` CLI, GitHub 토큰·자격 증명, SSH 에이전트가 확인되지 않았고 GitHub 플러그인은 검색·제안만 됐으며 연결되지 않았다. GitHub 연결 후 비공개 `u-solve` 원격을 생성하고 `main` 및 필요하면 페르소나 브랜치를 푸시한다. 원격이 생기기 전에는 GitHub 업로드 완료로 보고하지 않는다.
 
 ## 2026-10-11 다음 단계: 10월 12일 시연 판정표
 
