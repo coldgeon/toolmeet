@@ -5,11 +5,11 @@
 ## 읽는 순서
 
 1. [현재 상태](docs/CURRENT.md)와 [최근 인계](docs/HANDOFF.md)를 먼저 읽는다.
-2. [기획 요약](docs/PLAN.md), [과거 배경](docs/CONTEXT.md), [상세 제품 기획](docs/PRODUCT.md), [완료 기준](docs/ACCEPTANCE.md)을 순서대로 확인한다.
-3. [기업 업무 요청 형식](docs/INTAKE.md), [내부 시연 입력](docs/demo/README.md), [사전 판정표](docs/demo/EXPECTED.md)를 참고한다.
+2. [제품 기획과 요청 형식](docs/PLAN.md), [완료 기준](docs/ACCEPTANCE.md)을 확인한다.
+3. [내부 시연 입력](docs/demo/README.md)과 [사전 판정표](docs/demo/EXPECTED.md)를 시험 자료로 참고한다.
 4. 페르소나 담당 에이전트는 [역할 인계](docs/PERSONA_AGENT.md)를 읽는다.
 
-`docs/reference/`의 과거 기획과 신청 원본, `docs/SETUP.md`의 개인 WSL 설정은 로컬 전용이다. Git 추적에서 제외하며, 과거 기획의 확정 표현보다 최근 사용자 발언과 `docs/CURRENT.md`를 우선한다. 가상 페르소나와 내부 시연 문서는 실제 고객 검증 자료가 아니다.
+`docs/reference/`의 과거 기획과 신청 원본, `docs/SETUP.md`의 개인 WSL 설정은 로컬 전용이다. Git 추적에서 제외하며, 과거 기획의 확정 표현보다 최근 사용자 발언과 `docs/CURRENT.md`를 우선한다. 가상 페르소나와 내부 시연 문서는 실제 고객 검증 자료가 아니다. 이전 상세 문서와 판정 ID는 Git 커밋 `d5c6f78`에서 확인할 수 있다.
 
 ## 작업 범위
 
@@ -27,3 +27,5 @@
 - 페르소나 담당 하위 에이전트와는 이 채팅에서 부모가 메시지를 전달한다. 별도 작업 트리에는 미병합 QA 변경이 있으며, 두 브랜치의 변경은 검토 후 합친다.
 
 GitHub 원격 저장소는 연결이 확인된 뒤 비공개로 생성할 예정이다. 현재 로컬 커밋과 작업 트리만 준비됐다.
+
+기존 Windows 인터뷰 바로가기는 `scripts/start-interview.sh`를 실행한다. 스크립트는 Codex를 열며, 현재 작업 지침과 기획은 위 문서에서 읽는다.

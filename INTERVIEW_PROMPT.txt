@@ -1,7 +1,0 @@
-U-Solve 후속 대화를 시작해줘.
-
-AGENTS.md를 확인하고 docs/CURRENT.md, docs/HANDOFF.md를 먼저 읽어줘. 이어 docs/PLAN.md, docs/CONTEXT.md, docs/PRODUCT.md, docs/ACCEPTANCE.md를 읽어줘. docs/CONTEXT.md와 docs/reference/는 배경·과거 후보안이다.
-
-이번 프로토타입의 실무자 문서 업무 해결 흐름과 세 문서 사례는 기획·사전 판정 기준까지 정리됐다. 필수 파일 카테고리의 대표 입출력 조합, AI 소식 정리와의 통합, 도구·비용·실행 방식은 미정이다. 이미 확정된 내용을 처음부터 다시 인터뷰하지 마.
-
-내가 다음에 요청하는 작업을 우선해. 구현을 명시적으로 요청하면 합의된 범위와 docs/ACCEPTANCE.md를 바탕으로 Seed를 만들고, 기획 상태와 실제 실행 증거를 구분해줘. 구현 요청이 없으면 제품 코드·배포·유료 수집·Ralph 실행을 시작하지 마.
