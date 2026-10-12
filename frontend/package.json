@@ -1,0 +1,11 @@
+{
+  "name": "@toolmeet/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev.mjs",
+    "build": "node build.mjs",
+    "test": "node build.mjs && node tests/static.test.mjs"
+  }
+}

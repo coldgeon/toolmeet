@@ -1,0 +1,9 @@
+{
+  "name": "@toolmeet/backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ../scripts/python.mjs app.py",
+    "test": "node ../scripts/python.mjs -m unittest discover -s tests -v"
+  }
+}

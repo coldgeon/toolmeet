@@ -1,0 +1,6 @@
+[project]
+name = "toolmeet-backend"
+version = "0.1.0"
+description = "Toolmeet local mock API and legacy document demo"
+requires-python = ">=3.12"
+dependencies = []

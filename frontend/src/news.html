@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>툴밋 · AI 뉴스</title>
+  <meta name="description" content="업무와 다른 분야의 AI 소식을 카테고리별로 둘러보는 툴밋 시연 뉴스 게시판입니다.">
+  <link rel="stylesheet" href="/brief.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="/" aria-label="툴밋 홈">tool<span>·</span>meet</a>
+      <nav aria-label="주 메뉴"><a href="/">질문 게시판</a><a class="current" href="/news" aria-current="page">AI 뉴스</a><a href="/explore">솔루션 탐색</a></nav>
+      <a class="header-link" href="/demo">이전 문서 시연 ↗</a>
+    </div>
+  </header>
+  <div class="source-banner"><span class="mode-dot"></span><strong>MOCK NEWS</strong><span>아래 소식은 가상 시연 데이터입니다. 실제 기사 수집이나 발행일 확인 결과가 아닙니다.</span></div>
+
+  <main class="layout news-layout">
+    <aside class="rail" aria-label="뉴스 분야">
+      <div class="rail-block"><p class="rail-kicker">AI NEWS</p><strong>분야별로 보기</strong><small>업무 소식과 다른 분야를 둘러보세요.</small></div>
+      <div class="rail-line"></div>
+      <div class="rail-nav news-side-nav">
+        <button type="button" data-news-topic="all" class="selected">전체 소식</button>
+        <button type="button" data-news-topic="meeting">회의·후속 작업</button>
+        <button type="button" data-news-topic="summary">문서·요약</button>
+        <button type="button" data-news-topic="forms">양식·초안</button>
+        <button type="button" data-news-topic="planning">기획·조사</button>
+        <button type="button" data-news-topic="coding">개발·자동화</button>
+        <button type="button" data-news-topic="creative">이미지·콘텐츠</button>
+        <button type="button" data-news-topic="health">의료</button>
+        <button type="button" data-news-topic="education">교육</button>
+      </div>
+      <div class="rail-help"><strong>소식에서 업무로</strong><p>업무 분야 소식의 요약 상세에서 관련 질문으로 이동해 추천 후보와 첫 사용 확인점을 볼 수 있습니다.</p></div>
+    </aside>
+
+    <div class="content">
+      <section class="news-hero">
+        <p class="eyebrow">CATEGORY / AI NEWS</p>
+        <h1>AI 소식</h1>
+        <p>업무에 닿는 흐름과 다른 분야의 변화를 카테고리별로 살펴보세요. 현재는 시연용 가상 소식만 담았습니다.</p>
+        <a class="news-to-question" href="/">내 업무 질문하기 ↗</a>
+      </section>
+      <section id="news-detail" class="news-detail" hidden aria-label="소식 요약 상세"></section>
+      <section class="news-index" aria-label="AI 소식 목록">
+        <div class="section-head"><div><p class="eyebrow">NEWS BOARD</p><h2>소식 목록</h2></div><span class="mock-badge">기사 원문·발행일 없음</span></div>
+        <div class="news-toolbar"><span id="news-count">불러오는 중</span><label>소식 검색 <input id="news-search" type="search" placeholder="제목이나 내용 검색"></label></div>
+        <div id="news-filters" class="filter-row" aria-label="뉴스 분야 바로가기">
+          <button type="button" data-news-topic="all" class="selected">전체</button>
+          <button type="button" data-news-topic="meeting">회의</button>
+          <button type="button" data-news-topic="summary">문서</button>
+          <button type="button" data-news-topic="forms">양식</button>
+          <button type="button" data-news-topic="planning">기획</button>
+          <button type="button" data-news-topic="coding">개발</button>
+          <button type="button" data-news-topic="creative">이미지</button>
+          <button type="button" data-news-topic="health">의료</button>
+          <button type="button" data-news-topic="education">교육</button>
+        </div>
+        <div id="news-index-list" class="news-index-list" role="list"></div>
+      </section>
+      <footer><span>툴밋 · 가상 AI 소식 게시판</span><a href="/">질문 게시판으로 ↗</a></footer>
+    </div>
+  </main>
+  <script src="/news.js" defer></script>
+</body>
+</html>
