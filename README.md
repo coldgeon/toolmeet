@@ -13,7 +13,7 @@ U-Solve의 **질문 게시판과 AI 뉴스** 로컬 프로토타입이다. 메�
 
 ## 배포된 mock 시연
 
-[U-Solve 배포판](https://u-solve-board-demo-20261012.stony-grove-6981.chatgpt.site)은 2026-10-12에 **소유자 전용 접근**으로 배포했다. `/` 질문 게시판과 `/news/` 가상 뉴스가 동작한다. 이 배포판은 [정적 사이트 소스](site/)의 브라우저 내 mock API를 사용한다. 질문은 서버로 전송되지 않고, 외부 AI나 유료 API를 호출하지 않는다. 원본 링크의 방향 확인은 브라우저 화면 흐름이며 보안·회사 승인 경계가 아니다. 정적 배포판에는 이전 `/explore`와 Codex CLI를 쓰는 `/demo`를 포함하지 않았다.
+[U-Solve 공개 배포판](https://u-solve-board-demo-20261012.stony-grove-6981.chatgpt.site)은 2026-10-12에 **누구나 URL로 접근 가능**하게 전환했다. `/` 질문 게시판과 `/news/` 가상 뉴스가 동작하며 두 경로와 자산의 외부 HTTP 200을 확인했다. 이 배포판은 [정적 사이트 소스](site/)의 브라우저 내 mock API를 사용한다. 질문은 서버로 전송되지 않고, 외부 AI나 유료 API를 호출하지 않는다. 원본 링크의 방향 확인은 브라우저 화면 흐름이며 보안·회사 승인 경계가 아니다. 정적 배포판에는 이전 `/explore`와 Codex CLI를 쓰는 `/demo`를 포함하지 않았다.
 
 배포판을 다시 빌드·검증하려면 `site/src/`에 최신 `web/index.html`, `web/news.html`, `web/brief.css`, `web/brief.js`, `web/news.js`, `data/brief_mock.json`의 복사본을 반영한 뒤 다음을 실행한다.
 
@@ -23,7 +23,8 @@ node build.mjs
 node test_static.mjs
 ```
 
-GitHub 저장소 업로드와 기여자 초대는 연결 확인 후 진행한다. 현재 GitHub 원격 저장소는 연결되지 않았다.
+소스는 [seongwwww/u-solve](https://github.com/seongwwww/u-solve) **비공개 저장소**의 `main`에 푸시했다. GitHub CLI의 `seongwwww` 계정 인증을 사용했다. `coldgun` 초대는 GitHub API에서 `coldgun is not a user`(404)로 거절돼 개인 계정명이 필요하다.
+같은 정적 빌드의 GitHub Pages 게시도 시도했으나 이 계정의 현재 요금제가 **비공개 저장소의 Pages를 지원하지 않는다**는 GitHub 응답(422)을 받았다. 시험용 `gh-pages` 브랜치는 삭제했고 공개 Sites URL을 배포 주소로 사용한다.
 
 ## 로컬 시연
 
@@ -70,6 +71,6 @@ python3 scripts/verify_demo.py --save docs/demo/RUNS.json
 - 별도 페르소나 작업: `agent/persona-intake` 브랜치의 `/home/s2608/projects/u-solve/.worktrees/persona-intake`.
 - 페르소나 담당 하위 에이전트와는 이 채팅에서 부모가 메시지를 전달한다. 별도 작업 트리에는 미병합 QA 변경이 있으며, 두 브랜치의 변경은 검토 후 합친다.
 
-GitHub 원격 저장소는 연결이 확인된 뒤 비공개로 생성할 예정이다. `coldgun`은 GitHub 조직 계정으로 확인되어 초대할 개인 사용자명 또는 조직 소유 방식의 확인이 필요하다.
+GitHub 원격 저장소는 `origin`으로 연결돼 있다. `coldgun`은 GitHub 조직 계정으로 확인됐고 개인 저장소의 기여자 초대 API에서도 사용자 계정이 아니라는 오류가 났다. 초대할 개인 사용자명을 확인해야 한다.
 
 기존 Windows 인터뷰 바로가기는 `scripts/start-interview.sh`를 실행한다. 스크립트는 Codex를 열며, 현재 작업 지침과 기획은 위 문서에서 읽는다.

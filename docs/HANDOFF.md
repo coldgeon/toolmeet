@@ -13,7 +13,9 @@
 ## 실행과 검증
 
 - 실행: `cd /home/s2608/orca/workspaces/u-solve/prototype && python3 app.py` → `http://127.0.0.1:8765/`. 이번 작업 종료 시 로컬 서버는 실행 중이다. PC 재시작 후에는 같은 명령으로 다시 연다. 기본 mock 화면에는 외부 API 비용이 없다. `/demo`에서 본문 처리를 실행하는 경우에만 별도 Codex CLI가 필요하다.
-- 배포: [Sites 정적 mock 시연](https://u-solve-board-demo-20261012.stony-grove-6981.chatgpt.site)이 2026-10-12 **소유자 전용 접근**으로 성공 배포됐다. `site/.openai/hosting.json`은 프로젝트 ID와 `dist`를, `site/src/`는 질문·뉴스 UI와 브라우저 내 mock API를 담는다. `site/build.mjs`로 정적 파일을 만들고 `site/test_static.mjs`로 주요 흐름을 검증한다. 배포판에는 `/explore`·`/demo`가 없고 사용자 질문은 서버로 전송되지 않는다. 링크 확인은 화면 흐름이지 보안 경계가 아니다.
+- 배포: [Sites 정적 mock 시연](https://u-solve-board-demo-20261012.stony-grove-6981.chatgpt.site)을 2026-10-12 **공개 접근**으로 전환했다. 인증 없는 외부 요청에서 `/`·`/news/`·`/mock_api.js`·`/brief_mock.json` HTTP 200을 확인했다. `site/.openai/hosting.json`은 프로젝트 ID와 `dist`를, `site/src/`는 질문·뉴스 UI와 브라우저 내 mock API를 담는다. `site/build.mjs`로 정적 파일을 만들고 `site/test_static.mjs`로 주요 흐름을 검증한다. 배포판에는 `/explore`·`/demo`가 없고 사용자 질문은 서버로 전송되지 않는다. 링크 확인은 화면 흐름이지 보안 경계가 아니다.
+- GitHub: WSL에는 `gh`가 없지만 Windows GitHub CLI는 `seongwwww`로 인증돼 있다. [seongwwww/u-solve](https://github.com/seongwwww/u-solve) 비공개 저장소를 만들고 로컬 `prototype` 브랜치 커밋 `95e6604`를 원격 `main`에 푸시했다. 원격 SHA와 로컬 SHA 일치를 확인했다. CLI 토큰은 저장소·문서에 기록하지 않았다.
+- GitHub Pages: 같은 정적 빌드를 `gh-pages`에 올려 Pages API를 호출했으나 `Your current plan does not support GitHub Pages for this repository.`(422)로 거절됐다. 시험용 원격 `gh-pages` 브랜치는 삭제했다. 공개 Sites 배포는 별도로 정상 작동한다.
 - 자동 검증: `python3 -m unittest discover -s tests -v` **8개 PASS**. Python 구문 검사, 새 화면의 JS 구문 검사, JSON 파싱, `git diff --check`도 통과했다. 실행 서버에서 `/`, `/news`, `/api/board`, `/api/news`, JS·CSS 자산, `/explore`, `/demo` HTTP 200을 확인했다. 업무·환경별 추천 변화, mock 표기·보류/제외·무매치·초기 URL 미노출을 시험했다.
 - 정적 판 검증: `node site/build.mjs`, `node site/test_static.mjs` 통과. 별도 로컬 정적 서버에서 `/`·`/news/`·JS·CSS·JSON의 HTTP 200을 확인한 뒤 종료했다. Sites 배포 `appgdep_6acc649b7988819188c39ac8950366e0`은 `succeeded`다.
 - 브라우저 자동 제어 도구와 로컬 브라우저가 이 환경에 없어 화면의 직접 클릭·시각 검토는 하지 못했다. 서버/API·정적 자산·JS 구문으로 검증한 범위를 넘어 UI 조작 PASS를 주장하지 않는다.
@@ -21,9 +23,9 @@
 
 ## 남은 일
 
-1. 사용자는 **자신의 개인 GitHub 저장소에 푸시**하고 `coldgun`을 초대하라고 재확인했다. GitHub 연결이 완료되면 로컬 `prototype` 브랜치의 변경을 사용자 개인 저장소에 업로드한다. 현재 원격 저장소·`gh`·GitHub 인증은 없다. GitHub API `GET /users/coldgun`은 `type: Organization`을 반환해 개인 저장소의 사용자 기여자 초대 대상으로 지정할 수 없다. 초대할 개인 계정 식별이 필요하며, 초대 후 수락 상태까지 확인한다.
+1. `coldgun`에 대한 `PUT /repos/seongwwww/u-solve/collaborators/coldgun` 요청은 GitHub에서 `coldgun is not a user`(404)로 거절됐다. `GET /users/coldgun`은 `type: Organization`이다. 초대할 **개인 GitHub 계정명**을 받으면 같은 비공개 저장소에 기여자로 초대하고 수락 상태를 확인한다.
 2. 실제 브라우저에서 배포판 메인의 질문 입력·예시 질문 전환·환경 선택·소식→후보 이동·방법 미리보기·확인 후 링크와 `/news/`의 필터·검색·상세·질문 연결, 모바일 폭을 조작·시각 검토한다.
 3. 실제 소식 공급원과 후보 카탈로그를 연결할 때 기사 원문·발행/확인 시각·중복·출처·갱신 기록을 남기고, 제품별 기능·권한·요금·파일 형식을 다시 검증한다. 한국어 Threads 자동 수집은 실제 수집 실행 기록으로 따로 판정한다.
 4. 기업 적용 전 정책·이번 자료 전송 허용·시험용 대상·사람 검토·복구 방법을 확인한다. 기존 `/demo` 세 사례의 사람 원문 대조와 브라우저 검토도 별도로 남아 있다.
 
-원본 작업은 `prototype` 브랜치의 로컬 커밋에 정리했다. Sites 정적 mock 판만 배포했고 GitHub 푸시·유료 API 호출·기업 원본 처리는 하지 않았다.
+원본 작업은 `prototype` 브랜치의 로컬 커밋에 정리했다. Sites 정적 mock 판을 공개 배포하고 GitHub 개인 비공개 저장소에 푸시했다. 유료 API 호출·기업 원본 처리는 하지 않았다.
