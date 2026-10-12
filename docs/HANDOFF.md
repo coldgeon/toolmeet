@@ -1,5 +1,17 @@
 # 툴밋 인계
 
+## 2026-10-13 이슈 #3 계약 문서 구현 · PR 초안 승인 대기
+
+- 승인 이슈: [#3 대화·카탈로그·미디어 연동 계약 합의](https://github.com/coldgeon/toolmeet/issues/3). 사용자 `좋아 이슈 생성해`로 등록, 후속 `구현 들어가자`로 구현 시작을 지시받았다. 권장 순서 #3 → #4 → #5 → #6의 선행 문서부터 진행했다.
+- GitHub main과 origin/main이 `cc4ccdfe54ce41ab75e5780da379eaaa5e81c647`로 일치함을 확인한 뒤 별도 worktree `C:/Users/cksrj/.codex/worktrees/issue-3-ux-contract/u-solve`와 `docs/3-exploration-contract` 브랜치를 만들고 #3 Development 연결을 확인했다. 원래 작업 폴더의 다른 채팅 미커밋 변경을 가져오거나 덮어쓰지 않았다.
+- `docs/contracts/exploration-v1.md`와 동반 JSON에 대화 snapshot·known/explicit unknown·필요한 한 질문·조기 종료·실제 단계·보류/빈 후보/오류·수정/재시도·추천/확인 수명·동일 ID 카탈로그·근거·가격 미확인·미디어 출처/사용 근거/대체·하위 경로·담당/후속 승인 경계를 정의했다. 현재 API와 새 mock DTO/HTTP 제안을 구분했다.
+- 기존 brief에는 별도 확인 token이 없고 brief_token이 900초·확인 성공 후 비소비임을 명시했다. 같은 revision의 재평가도 이전 추천/confirm을 무효화하며 추천 request_id·token까지 검사하도록 정의했다. 내부 local-review는 supporting_methods로 보존하고 공개 추천 집계에서 제외한다.
+- 내부 합성 실무자는 탭 복귀 시 제출 전 초안 보존과 조건 확인 필요/방향 확인 구분을 권고했다. 독립 검증자는 같은 revision 재시도 중 확인 경합과 not_found 코드 정합성을 지적했고 기술 검토자는 내부 방법→empty 변환을 확인했다. 모두 문서·예시에 반영했다. 실제 고객 인터뷰나 사람 사용자 승인·backend 담당 합의가 아니다.
+- 실행 검증: `npm ci --ignore-scripts --no-audit --no-fund` 성공, `npm test` 성공(DOM 26개·Python API 13개·정적 mock·5개 화면/자산/API 프록시·15개 판정 비교), `npm run build` 성공. 외부 검증 스크립트에서 합성 turn 8개·도착 순서 6개·미디어 거부 3개·카탈로그 2개·ID 교집합 0·문서 로컬 링크를 검사해 PASS했다. 예시의 topics 순서를 원자료와 일치시킨 뒤 다시 통과했다.
+- 계약 JSON 검증 도구와 Seed `seed_7c693d26aeb1`은 저장소 밖 `C:/Users/cksrj/.codex/visualizations/2026/10/12/01a130ba-3577-7d43-ad9e-f4b58d88ae40/toolmeet-ux-issues/`에 보관한다. 현재 세션에 Ouroboros MCP/CLI가 없어 로컬 Seed만 준비했고 다른 반복 실행기는 추가하지 않았다.
+- 문서만 변경했다. 새 DTO의 실제 HTTP/AI/미디어/브라우저·320/360/390px·스크린리더·GitHub CI·제품 배포는 검증하지 않았다. #4~#6 실제 화면 구현과 backend/리서치 검토·실연동이 남아 있다. 기존 /news와 로컬 /explore·/demo 제품 코드를 바꾸지 않았으며 dist는 빌드로만 생성했다.
+- 다음은 #3의 완료 보고와 PR 제목·본문 초안 검토다. PR 생성·머지는 각각 별도 사람 승인이 필요하며 main push·자동 머지·관리자 우회·강제 push·태그·배포는 실행하지 않았다.
+
 ## 2026-10-13 이슈 #1 구현 완료 · PR 초안 승인 대기
 
 - 승인 이슈: [#1](https://github.com/coldgeon/toolmeet/issues/1) `fix(frontend): 환경 변경 중 이전 추천·원본 링크 표시 방지`. 사용자 `이슈 작성해`는 이슈 생성, 후속 `작업 시작해`는 이슈 구현 시작 승인이다. PR 생성·머지·배포 승인은 아직 없다.
