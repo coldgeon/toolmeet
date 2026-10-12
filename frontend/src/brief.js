@@ -1,5 +1,5 @@
 const $ = (id) => document.getElementById(id);
-const state = {request: 0, boardPosts: [], boardTopic: "all"};
+const state = {request: 0, submitted: false, briefToken: null, candidates: new Map(), boardPosts: [], boardTopic: "all"};
 const statusLabels = {possible: "조건상 검토 가능", adapt: "환경 변경 필요", hold: "확인 전 보류", excluded: "입력 조건과 충돌"};
 
 function node(tag, className = "", value = "") {
@@ -18,6 +18,16 @@ function profile() {
     data_kind: $("data-kind").value,
     hosting: $("hosting").value,
   };
+}
+
+function invalidateResults() {
+  const request = ++state.request;
+  state.briefToken = null;
+  state.candidates.clear();
+  $("results").hidden = true;
+  $("related-list").replaceChildren();
+  $("candidate-list").replaceChildren();
+  return request;
 }
 
 function candidateJump(id) {
@@ -57,6 +67,9 @@ function renderNews(container, news) {
 }
 
 function renderCandidate(item) {
+  const request = state.request;
+  const briefToken = state.briefToken;
+  const isCurrent = () => request === state.request && briefToken === state.briefToken;
   const card = node("article", "candidate");
   card.id = "candidate-" + item.id;
   const top = node("div", "candidate-top");
@@ -103,13 +116,15 @@ function renderCandidate(item) {
     const confirm = node("button", "confirm-button", "방향 확인 · 원본 안내 보기");
     confirm.type = "button";
     confirm.addEventListener("click", async () => {
+      if (!isCurrent()) return;
       confirm.disabled = true;
       try {
         const response = await fetch("/api/brief/confirm", {
           method: "POST", headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({brief_token: state.briefToken, candidate_id: item.id, confirmed: true}),
+          body: JSON.stringify({brief_token: briefToken, candidate_id: item.id, confirmed: true}),
         });
         const data = await response.json();
+        if (!isCurrent()) return;
         if (!response.ok) throw new Error(data.error || "원본 안내를 가져오지 못했습니다.");
         confirm.remove();
         panel.append(node("p", "", "원본 링크 안내 단계입니다. 설치·계정 연결·자료 전송·첫 시험 완료가 아닙니다."));
@@ -119,6 +134,7 @@ function renderCandidate(item) {
         link.rel = "noopener noreferrer";
         panel.append(link);
       } catch (error) {
+        if (!isCurrent()) return;
         panel.append(node("p", "hold-note", error.message));
         confirm.disabled = false;
       }
@@ -151,16 +167,16 @@ function render(data) {
 }
 
 async function refresh(scrollToAnswer = false) {
-  const request = ++state.request;
-  state.briefToken = null;
-  $("results").hidden = true;
+  const request = invalidateResults();
   if ($("work").value.trim().length < 8) {
+    state.submitted = false;
     $("status").hidden = false;
     $("status").textContent = "업무를 8자 이상 적어 주세요.";
     $("results").hidden = true;
     $("submit").disabled = false;
     return;
   }
+  state.submitted = true;
   $("submit").disabled = true;
   $("status").hidden = false;
   $("status").textContent = "입력한 업무와 환경에 맞춰 mock 결과를 다시 계산하는 중입니다.";
@@ -222,12 +238,11 @@ document.querySelectorAll("[data-work]").forEach((item) => item.addEventListener
   refresh(true);
 }));
 document.querySelectorAll(".fields select").forEach((item) => item.addEventListener("change", () => {
-  if ($("work").value.trim().length >= 8 && !$("results").hidden) refresh();
+  if (state.submitted) refresh();
 }));
 $("work").addEventListener("input", () => {
-  state.request += 1;
-  state.briefToken = null;
-  $("results").hidden = true;
+  state.submitted = false;
+  invalidateResults();
   $("status").hidden = true;
   $("submit").disabled = false;
 });
