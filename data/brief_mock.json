@@ -1,0 +1,330 @@
+{
+  "mode": "mock",
+  "updated_at": "2026-10-12",
+  "note": "시연용 가상 소식과 후보 설명입니다. 실제 기사 수집·제품 지원·가격·기업 적합성을 검증하지 않았습니다.",
+  "candidates": [
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "kind": "AI 서비스",
+      "topics": [
+        "meeting",
+        "summary",
+        "planning",
+        "forms",
+        "coding"
+      ],
+      "ecosystems": [
+        "any"
+      ],
+      "external_ai": true,
+      "install": false,
+      "summary": "대화형으로 초안과 정리 방법을 시험할 후보",
+      "why": "자유 서술한 업무를 작은 시험 질문과 출력 구조로 나눠 볼 수 있어 후보에 넣었습니다.",
+      "method": [
+        "공개·합성 예시로 원하는 결과 형식을 적기",
+        "출력의 누락과 원문 근거를 사람이 대조하기"
+      ],
+      "first_check": "선택한 계정에서 필요한 입력 방식·데이터 취급·요금을 확인하고 공개·합성 예시 한 건으로 결과를 대조하세요.",
+      "source_url": "https://chatgpt.com/",
+      "source_status": "서비스 후보 예시 · 현재 기능/요금 미검증"
+    },
+    {
+      "id": "notebooklm",
+      "name": "NotebookLM",
+      "kind": "AI 서비스",
+      "topics": [
+        "summary",
+        "planning"
+      ],
+      "ecosystems": [
+        "google"
+      ],
+      "external_ai": true,
+      "install": false,
+      "summary": "자료 중심 요약을 검토할 후보",
+      "why": "여러 자료를 읽고 출처를 따라가야 하는 업무와 관련된 검토 후보입니다.",
+      "method": [
+        "공개·합성 자료 두 건으로 질문과 원하는 요약 항목 정하기",
+        "각 문장의 출처와 빠진 조건을 대조하기"
+      ],
+      "first_check": "현재 계정과 자료 형식이 지원되는지 원본 안내에서 확인하고, 공개·합성 자료 두 건의 인용을 검토하세요.",
+      "source_url": "https://notebooklm.google.com/",
+      "source_status": "서비스 후보 예시 · 현재 기능/요금 미검증"
+    },
+    {
+      "id": "copilot",
+      "name": "Microsoft 365 Copilot",
+      "kind": "AI 서비스",
+      "topics": [
+        "meeting",
+        "summary",
+        "planning"
+      ],
+      "ecosystems": [
+        "microsoft"
+      ],
+      "external_ai": true,
+      "install": false,
+      "summary": "Microsoft 업무 환경에서 검토할 후보",
+      "why": "입력한 Microsoft 환경과 문서·회의 업무가 맞닿아 있어 검토 후보입니다.",
+      "method": [
+        "관리자에게 계정·권한·정책 확인",
+        "시험용 문서에서 원하는 출력과 근거를 대조하기"
+      ],
+      "first_check": "관리자에게 해당 계정의 라이선스·권한·데이터 경계를 확인하고 시험용 자료로 결과를 비교하세요.",
+      "source_url": "https://www.microsoft.com/en-us/microsoft-365/copilot/business",
+      "source_status": "서비스 후보 예시 · 계정별 지원/요금 미검증"
+    },
+    {
+      "id": "n8n-meeting",
+      "name": "n8n 회의 메모 워크플로",
+      "kind": "공개 프로젝트",
+      "topics": [
+        "meeting"
+      ],
+      "ecosystems": [
+        "google"
+      ],
+      "external_ai": true,
+      "install": true,
+      "summary": "회의 메모에서 할 일을 뽑아 Google 업무 도구로 잇는 공개 흐름",
+      "why": "회의록의 결정·할 일을 후속 작업으로 옮기려는 업무와 단계가 겹칩니다.",
+      "method": [
+        "회의 메모 입력과 결과 열을 정의하기",
+        "시험용 대상에만 연결하고 담당자·기한 누락을 검토하기"
+      ],
+      "first_check": "공개 템플릿에 self-hosted 전용 community node가 표시됩니다. 자체 호스팅 n8n 여부와 계정·권한을 먼저 확인하고 시험용 자료로 결과를 대조하세요.",
+      "source_url": "https://n8n.io/workflows/5904-transform-meeting-notes-into-action-items-with-gemini-and-google-workspace/",
+      "source_status": "기존 저장 설명 요약 · 실행 미검증",
+      "hosting": "self_hosted"
+    },
+    {
+      "id": "n8n-summary",
+      "name": "n8n 콘텐츠 요약 워크플로",
+      "kind": "공개 프로젝트",
+      "topics": [
+        "summary",
+        "planning"
+      ],
+      "ecosystems": [
+        "any"
+      ],
+      "external_ai": true,
+      "install": true,
+      "summary": "URL·텍스트·PDF 요약 흐름을 설명하는 공개 템플릿",
+      "why": "자료 요약 업무와 입력·출력 흐름이 관련됩니다. 복수 자료 통합은 확인되지 않았습니다.",
+      "method": [
+        "원본별 입력과 원하는 요약 구조 정하기",
+        "출처 보존과 복수 자료 통합 가능 여부 확인하기"
+      ],
+      "first_check": "n8n·AI 공급자 권한과 입력 형식을 확인하고, 공개 자료 두 건이 한 결과로 합쳐지는지 시험하세요.",
+      "source_url": "https://n8n.io/workflows/8210-summarize-content-from-urls-text-and-pdfs-using-openai/",
+      "source_status": "기존 저장 설명 요약 · 실행 미검증"
+    },
+    {
+      "id": "n8n-template",
+      "name": "n8n 양식 PDF 워크플로",
+      "kind": "공개 프로젝트",
+      "topics": [
+        "forms"
+      ],
+      "ecosystems": [
+        "google"
+      ],
+      "external_ai": true,
+      "install": true,
+      "summary": "Google Docs 양식 값을 채워 PDF 링크를 만드는 공개 흐름",
+      "why": "양식 초안과 PDF 결과를 원하는 업무의 단계와 겹칩니다. 근거 문서 자동 연결은 미확인입니다.",
+      "method": [
+        "양식 필드와 근거 자료 대응표 만들기",
+        "시험용 양식 복사본의 빈칸·PDF 결과 검토하기"
+      ],
+      "first_check": "공개 템플릿에 self-hosted 전용 community node가 표시됩니다. 자체 호스팅 n8n 여부와 계정·권한을 먼저 확인하고 시험용 자료로 결과를 대조하세요.",
+      "source_url": "https://n8n.io/workflows/5808-create-custom-pdf-documents-from-templates-with-gemini-and-google-drive/",
+      "source_status": "기존 저장 설명 요약 · 실행 미검증",
+      "hosting": "self_hosted"
+    },
+    {
+      "id": "github-meeting",
+      "name": "회의록 → Sheets 공개 예제",
+      "kind": "공개 프로젝트",
+      "topics": [
+        "meeting",
+        "coding"
+      ],
+      "ecosystems": [
+        "google"
+      ],
+      "external_ai": true,
+      "install": true,
+      "summary": "로컬 텍스트·Claude·Google Sheets 연결 예제",
+      "why": "회의록 할 일을 시트 행으로 옮기는 목표와 출력 형태가 가깝습니다.",
+      "method": [
+        "작성자 경로와 열 매핑을 시험 환경에 맞게 바꾸기",
+        "운영 시트 대신 시험용 시트에서 행 중복·누락 검토하기"
+      ],
+      "first_check": "로컬 텍스트 입력만 확인된 예제입니다. 파일 경로·Claude/Sheets 권한·시험용 시트 쓰기를 먼저 확인하세요.",
+      "source_url": "https://github.com/TrentIndeed/n8n-meeting-action-items",
+      "source_status": "기존 코드 정적 확인 · 실행 미검증"
+    },
+    {
+      "id": "local-review",
+      "name": "로컬 검토 체크리스트",
+      "kind": "U-Solve 방법",
+      "topics": [
+        "meeting",
+        "summary",
+        "forms",
+        "coding",
+        "planning"
+      ],
+      "ecosystems": [
+        "any"
+      ],
+      "external_ai": false,
+      "install": false,
+      "summary": "외부 전송 없이 업무 입력·결과·검토 기준을 정리하는 시작 방법",
+      "why": "정책이나 설치 조건이 정해지기 전에도 첫 시험의 입력·출력·검토 기준을 준비할 수 있습니다.",
+      "method": [
+        "현재 업무 순서와 원하는 결과 한 건 기록",
+        "누락·오류 기준과 시험용 자료 준비"
+      ],
+      "first_check": "대표 자료 한 건에서 성공 기준과 잘못된 결과의 복구 방법을 정하세요.",
+      "source_url": null,
+      "source_status": "U-Solve 시연용 방법 · 외부 도구 실행 아님"
+    }
+  ],
+  "news": [
+    {
+      "id": "meeting-review",
+      "topic": "meeting",
+      "title": "회의 AI 결과에 담당자·기한 검토 단계를 두는 흐름",
+      "summary": "회의 후속 작업을 자동 반영하기 전에 누락과 오기입을 확인하는 활용 시나리오입니다.",
+      "candidate_ids": [
+        "n8n-meeting",
+        "github-meeting",
+        "chatgpt"
+      ],
+      "angle": "회의록의 결정과 할 일을 분리해 시험용 대상에서 검토"
+    },
+    {
+      "id": "meeting-workspace",
+      "topic": "meeting",
+      "title": "회의 요약을 기존 업무 도구와 잇는 활용 사례",
+      "summary": "기존 업무 도구의 계정·권한과 시험용 공간이 선택을 바꾼다는 시연용 소식입니다.",
+      "candidate_ids": [
+        "copilot",
+        "n8n-meeting"
+      ],
+      "angle": "현재 계정·권한을 먼저 확인한 뒤 시험용 회의 자료로 비교"
+    },
+    {
+      "id": "source-summary",
+      "topic": "summary",
+      "title": "여러 자료 요약에서 출처 추적을 확인하는 흐름",
+      "summary": "요약의 문장별 근거와 빠진 자료를 비교하는 시연용 주제입니다.",
+      "candidate_ids": [
+        "notebooklm",
+        "n8n-summary",
+        "chatgpt"
+      ],
+      "angle": "공개 자료 두 건으로 인용과 누락을 검토"
+    },
+    {
+      "id": "forms-draft",
+      "topic": "forms",
+      "title": "양식 초안의 빈칸과 근거를 분리하는 활용 사례",
+      "summary": "근거가 없는 필드를 추정하지 않고 검토 대상으로 남기는 시연용 주제입니다.",
+      "candidate_ids": [
+        "n8n-template",
+        "chatgpt"
+      ],
+      "angle": "시험용 양식의 각 필드와 근거를 대조"
+    },
+    {
+      "id": "coding-helper",
+      "topic": "coding",
+      "title": "개발 업무 자동화에 공개 워크플로를 검토하는 흐름",
+      "summary": "프로젝트의 입력 형식과 실행 환경을 먼저 확인하는 시연용 주제입니다.",
+      "candidate_ids": [
+        "github-meeting",
+        "local-review"
+      ],
+      "angle": "샘플 입력과 출력 스키마부터 시험"
+    },
+    {
+      "id": "planning-research",
+      "topic": "planning",
+      "title": "기획 자료를 요약하고 결정 근거를 남기는 흐름",
+      "summary": "자료별 조건과 출처를 나눠 기록하는 시연용 주제입니다.",
+      "candidate_ids": [
+        "notebooklm",
+        "n8n-summary",
+        "chatgpt"
+      ],
+      "angle": "공개 자료의 주장과 출처를 대조"
+    },
+    {
+      "id": "creative-other",
+      "topic": "creative",
+      "title": "이미지 제작에서 생성 결과 검토를 붙이는 사례",
+      "summary": "다른 분야의 가상 AI 소식입니다. 실제 기사 수집 결과가 아닙니다.",
+      "candidate_ids": [],
+      "angle": ""
+    },
+    {
+      "id": "health-other",
+      "topic": "health",
+      "title": "의료 분야에서 AI 보조 결과를 검토하는 사례",
+      "summary": "다른 분야의 가상 AI 소식입니다. 실제 기사 수집 결과가 아닙니다.",
+      "candidate_ids": [],
+      "angle": ""
+    },
+    {
+      "id": "education-other",
+      "topic": "education",
+      "title": "교육 분야에서 AI 학습 보조를 시험하는 사례",
+      "summary": "다른 분야의 가상 AI 소식입니다. 실제 기사 수집 결과가 아닙니다.",
+      "candidate_ids": [],
+      "angle": ""
+    }
+  ],
+  "board_posts": [
+    {
+      "id": "post-meeting",
+      "topic": "meeting",
+      "title": "회의록에서 결정과 할 일을 시트에 정리하려면?",
+      "summary": "회의 후속 조치 · 담당자와 기한 누락을 먼저 확인하고 싶어요.",
+      "work": "회의록에서 결정과 할 일을 뽑아 시트에 정리하고 싶어요"
+    },
+    {
+      "id": "post-summary",
+      "topic": "summary",
+      "title": "여러 문서를 비교해 출처가 남는 요약을 만들려면?",
+      "summary": "자료 요약 · 문서별 차이와 근거를 보고 싶어요.",
+      "work": "여러 문서를 비교해 출처가 있는 요약 보고서를 만들고 싶어요"
+    },
+    {
+      "id": "post-forms",
+      "topic": "forms",
+      "title": "문서 양식을 채워 PDF 초안을 만들 수 있을까요?",
+      "summary": "양식 초안 · 근거 없는 칸은 비워 두고 싶어요.",
+      "work": "구글 문서 양식 초안을 채워 PDF로 만들고 싶어요"
+    },
+    {
+      "id": "post-planning",
+      "topic": "planning",
+      "title": "기획 자료의 근거를 모아 검토하려면?",
+      "summary": "기획 조사 · 자료별 주장과 출처를 정리하고 싶어요.",
+      "work": "기획 자료를 조사해 출처와 조건을 나눠 정리하고 싶어요"
+    },
+    {
+      "id": "post-coding",
+      "topic": "coding",
+      "title": "반복 개발 업무에 공개 프로젝트를 참고하려면?",
+      "summary": "개발 자동화 · 샘플 입출력과 실행 환경부터 확인하고 싶어요.",
+      "work": "개발 코드 작업을 자동화할 공개 프로젝트와 AI 서비스를 찾고 싶어요"
+    }
+  ]
+}

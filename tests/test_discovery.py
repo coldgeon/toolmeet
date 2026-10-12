@@ -45,7 +45,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(search("여러 문서를 비교해 보고서를 만들고 싶다")[0]["id"], "n8n-content-summary")
         self.assertEqual(search("구글 문서 양식을 채워 PDF로 만들고 싶다")[0]["id"], "n8n-template-pdf")
         self.assertEqual(search("재고 발주를 자동화하고 싶다"), [])
-        with urllib.request.urlopen(self.url + "/") as response:
+        with urllib.request.urlopen(self.url + "/explore") as response:
             self.assertIn("하려는 일", response.read().decode())
         with urllib.request.urlopen(self.url + "/demo") as response:
             self.assertIn("legacy.js", response.read().decode())

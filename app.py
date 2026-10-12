@@ -21,6 +21,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from solution_store import BY_ID, CATALOG, assess_constraints, preview as solution_preview, search as search_solutions
+from brief_engine import board_feed, build_brief, news_feed
 
 
 ROOT = Path(__file__).resolve().parent
@@ -34,13 +35,14 @@ TASKS = {
 PREVIEWS: dict[str, tuple[str, float]] = {}
 DISCOVERIES: dict[str, tuple[str, list[str], float]] = {}
 SIMULATIONS: dict[str, tuple[str, str, float]] = {}
+BRIEF_CHOICES: dict[str, tuple[dict, float]] = {}
 PREVIEW_LOCK = threading.Lock()
 PREVIEW_TTL = 900
 
 
 def prune_tokens(now: float) -> None:
     """Drop expired in-memory local-demo tokens while holding PREVIEW_LOCK."""
-    for collection in (PREVIEWS, DISCOVERIES, SIMULATIONS):
+    for collection in (PREVIEWS, DISCOVERIES, SIMULATIONS, BRIEF_CHOICES):
         for token, value in list(collection.items()):
             if value[-1] < now:
                 del collection[token]
@@ -235,8 +237,17 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path == "/api/catalog":
             self.send_json({"count": len(CATALOG), "scope": "저장된 공개 설명 요약·정적 확인만 검색", "last_checked": "2026-10-11"})
             return
+        if parsed.path == "/api/board":
+            self.send_json(board_feed())
+            return
+        if parsed.path == "/api/news":
+            self.send_json(news_feed())
+            return
         assets = {
-            "/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
+            "/": ("index.html", "text/html"), "/brief.js": ("brief.js", "text/javascript"),
+            "/brief.css": ("brief.css", "text/css"),
+            "/news": ("news.html", "text/html"), "/news.js": ("news.js", "text/javascript"),
+            "/explore": ("explore.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
             "/discover.css": ("discover.css", "text/css"),
             "/demo": ("legacy.html", "text/html"), "/legacy.js": ("legacy.js", "text/javascript"),
             "/style.css": ("style.css", "text/css"),
@@ -253,7 +264,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def do_POST(self) -> None:
-        if self.path not in ("/api/discover", "/api/simulate", "/api/confirm", "/api/preview", "/api/run"):
+        if self.path not in ("/api/brief", "/api/brief/confirm", "/api/discover", "/api/simulate", "/api/confirm", "/api/preview", "/api/run"):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         try:
@@ -263,6 +274,31 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             if not isinstance(data, dict):
                 raise ValueError("요청 형식이 올바르지 않습니다.")
+            if self.path == "/api/brief":
+                result = build_brief(data)
+                token = secrets.token_urlsafe(24)
+                with PREVIEW_LOCK:
+                    now = time.monotonic()
+                    prune_tokens(now)
+                    BRIEF_CHOICES[token] = ({item["id"]: (item["status"], item["source_url"]) for item in result["candidates"]}, now + PREVIEW_TTL)
+                for item in result["candidates"]:
+                    del item["source_url"]
+                result["brief_token"] = token
+                self.send_json(result)
+                return
+            if self.path == "/api/brief/confirm":
+                token, candidate_id = data.get("brief_token"), data.get("candidate_id")
+                if data.get("confirmed") is not True:
+                    raise ValueError("방법의 방향 확인이 필요합니다.")
+                with PREVIEW_LOCK:
+                    stored = BRIEF_CHOICES.get(token) if isinstance(token, str) else None
+                if not stored or stored[1] < time.monotonic() or candidate_id not in stored[0]:
+                    raise ValueError("현재 조건으로 후보를 다시 확인하세요.")
+                status, source_url = stored[0][candidate_id]
+                if status not in ("possible", "adapt") or not source_url:
+                    raise ValueError("정책·설치·계정 조건이 확인되기 전에는 원본 연결 안내를 보류합니다.")
+                self.send_json({"source_url": source_url, "stage": "원본 링크 안내 · 첫 시험 전"})
+                return
             if self.path == "/api/discover":
                 query = data.get("query")
                 if not isinstance(query, str) or not 8 <= len(query.strip()) <= 2000:
