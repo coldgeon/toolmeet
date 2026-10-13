@@ -2,12 +2,19 @@
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 탐색·질문 UX 계약 #3 · PR 초안 검토 단계
+## 두 탐색 탭·집중 입력 #4 · 구현 완료 / PR 초안 검토
 
-- 사용자 `구현 들어가자` 지시로 [#3](https://github.com/coldgeon/toolmeet/issues/3)의 선행 계약 문서를 최신 main `cc4ccdfe54ce41ab75e5780da379eaaa5e81c647`에서 만든 `docs/3-exploration-contract` 브랜치의 별도 worktree에 작성했다.
-- [탐색·질문 계약 v1](contracts/exploration-v1.md)과 [합성 JSON 예시](contracts/exploration-v1.examples.json)는 후속 frontend mock 어댑터 기준안이다. 실제 HTTP API는 협의용 제안이며 backend/shared 구현·데이터 조사·실제 AI·저장 미디어 연동을 완료한 것으로 표시하지 않는다.
-- [#4 두 탭·집중 입력](https://github.com/coldgeon/toolmeet/issues/4), [#5 대화·추천](https://github.com/coldgeon/toolmeet/issues/5), [#6 프리뷰·상세](https://github.com/coldgeon/toolmeet/issues/6)는 후속 화면 작업이다. 제품 화면은 아직 질문 게시판·별도 뉴스의 기존 mock이며 실제 UI 개편은 적용되지 않았다.
-- 실제 HTTP 도입·리서치 자료와 미디어·공용 데이터 반영은 담당 영역의 별도 승인 범위다. 이번 문서 PR 생성·머지·배포는 승인받지 않았다.
+- 사용자 `좋아, #4는 기존 스택으로 구현 시작해.` 지시로 최신 main `5460da458d57ec816dc881b72bdebacf195e440f`에서 연결한 `feat/4-exploration-tabs` 브랜치의 별도 worktree에서 구현했다. HTML·CSS·Vanilla JavaScript와 기존 Node 개발/빌드·jsdom 테스트를 유지했다.
+- `/`에서 `AI에게 질문하기`와 `모든 프로젝트 보기`를 분리했다. 초기 중앙 질문 입력 뒤로 저장된 합성 카드가 반복 상승하며 입력 클릭·키보드 포커스 뒤 흰 집중 상태로 바뀐다. 초점 이탈로 모션을 재시작하지 않으며 수동 정지·움직임 감소 설정을 지원한다.
+- 탭 이동은 질문·다섯 조건·현재 추천·미리보기·확인 링크를 보존한다. 명시적 새 질문은 질문·조건·추천·확인 상태와 이전 요청을 초기화하며 수동 모션 정지 선호를 보존한다. 첫 화면의 환경 설정과 시연 질문 목록은 접어 두었다.
+- `catalog.js`는 기존 공용 mock 후보를 exploration.v1 DTO로 읽는 교체 가능한 frontend 어댑터다. 목록과 배경은 같은 8개 ID를 사용하며 자체 제작 저장 SVG·권리/합성 표시를 연결했다. 누락·이미지 실패·권리 미확인은 설명으로 대체한다. 실제 조사·도구 실행·요금 검증·실제 서비스 화면 연결을 완료한 것으로 표시하지 않는다.
+- 전체 테스트(DOM 44개·Python 13개·정적 mock/하위 경로·HTTP 통합 15조합)와 정적 빌드가 통과했다. 브라우저에서 1440px 및 320·360·390px, 360×560px 키보드 입력, 탭·정지·기본 결과/확인·뉴스→질문·`/toolmeet/`를 확인했다. OS 움직임 감소 설정·실제 휴대폰·스크린리더는 직접 시험하지 않았다.
+- [#5 대화·추천](https://github.com/coldgeon/toolmeet/issues/5), [#6 프리뷰·상세](https://github.com/coldgeon/toolmeet/issues/6)는 별도 구현 범위다. backend/shared 원본은 변경하지 않았으며 PR 생성·머지·배포는 별도 사용자 승인 대기다.
+
+## 탐색·질문 UX 계약 #3 · main 반영
+
+- [PR #7](https://github.com/coldgeon/toolmeet/pull/7)은 사용자 머지 승인 뒤 `5460da458d57ec816dc881b72bdebacf195e440f`로 Squash merge됐고 [#3](https://github.com/coldgeon/toolmeet/issues/3)이 종료됐다. 승인 head `11b669233a8099d4e6102b10dddd8904e84585e1`과 Windows·Linux CI 성공을 확인했다. 제품 배포는 실행하지 않았다.
+- [탐색·질문 계약 v1](contracts/exploration-v1.md)과 [합성 JSON 예시](contracts/exploration-v1.examples.json)는 후속 frontend mock 어댑터 기준이다. 실제 HTTP API는 협의용 제안이며 backend/shared 구현·데이터 조사·실제 AI 연동은 별도다.
 
 ## 프론트엔드 이슈 #1 · main 반영
 
@@ -25,7 +32,7 @@
 ## 제품과 구현
 
 - 서비스 이름은 **툴밋**. AI 소식부터 업무에 맞는 도구·공개 프로젝트·활용 방법을 연결한다.
-- `/`는 질문 게시판, `/news`는 별도 뉴스 카테고리다. 업무·환경을 입력하면 관련 가상 소식, 후보, 추천 이유·조건·방법 미리보기·확인 후 원본 링크를 보여준다.
+- `/`는 두 탐색 탭의 질문 입력과 기본 프로젝트 목록, `/news`는 별도 뉴스 카테고리다. 업무·환경을 입력하면 기존 mock 답변에서 관련 가상 소식, 후보, 추천 이유·조건·방법 미리보기·확인 후 원본 링크를 보여준다. 조건을 하나씩 묻는 대화는 #5의 후속 작업이다.
 - 소식·예시 질문·추천은 mock이다. 실제 기사 수집, AI 자유문장 이해, 회원·게시글 저장, 자동 도구 실행은 미구현이다. 입력 질문은 메모리에서 처리한다.
 - 기본 예시 5개가 각각 회의·요약·양식·기획·개발로 분류되도록 수정했다. 문서·자료·PDF 같은 일반 단어보다 작업별 단어에 높은 점수를 주며 같은 규칙 파일을 양쪽에서 사용한다.
 - `/explore`의 기존 5건 탐색과 `/demo`의 Markdown 문서 시연을 보존했다. `/demo` 실제 처리는 로그인된 Codex CLI에 의존하며, 일반 테스트는 호출을 대체해 입력·확인 경계만 검증한다.

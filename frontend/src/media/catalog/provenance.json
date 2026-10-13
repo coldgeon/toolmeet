@@ -1,0 +1,182 @@
+{
+  "contract_version": "exploration.v1",
+  "note": "자체 제작 저장 SVG의 사용 근거. 텍스트는 기존 mock 원자료이며 실제 기능·등록·실행·요금 확인을 뜻하지 않습니다.",
+  "media": [
+    {
+      "id": "chatgpt-card",
+      "project_id": "chatgpt",
+      "kind": "image",
+      "src": "media/catalog/chatgpt.svg",
+      "alt": "ChatGPT · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#chatgpt"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "notebooklm-card",
+      "project_id": "notebooklm",
+      "kind": "image",
+      "src": "media/catalog/notebooklm.svg",
+      "alt": "NotebookLM · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#notebooklm"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "copilot-card",
+      "project_id": "copilot",
+      "kind": "image",
+      "src": "media/catalog/copilot.svg",
+      "alt": "Microsoft 365 Copilot · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#copilot"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "n8n-meeting-card",
+      "project_id": "n8n-meeting",
+      "kind": "image",
+      "src": "media/catalog/n8n-meeting.svg",
+      "alt": "n8n 회의 메모 워크플로 · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#n8n-meeting"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "n8n-summary-card",
+      "project_id": "n8n-summary",
+      "kind": "image",
+      "src": "media/catalog/n8n-summary.svg",
+      "alt": "n8n 콘텐츠 요약 워크플로 · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#n8n-summary"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "n8n-template-card",
+      "project_id": "n8n-template",
+      "kind": "image",
+      "src": "media/catalog/n8n-template.svg",
+      "alt": "n8n 양식 PDF 워크플로 · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#n8n-template"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "github-meeting-card",
+      "project_id": "github-meeting",
+      "kind": "image",
+      "src": "media/catalog/github-meeting.svg",
+      "alt": "회의록 → Sheets 공개 예제 · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#github-meeting"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    },
+    {
+      "id": "local-review-card",
+      "project_id": "local-review",
+      "kind": "image",
+      "src": "media/catalog/local-review.svg",
+      "alt": "로컬 검토 체크리스트 · 기존 mock 설명을 표현한 합성 카드, 실제 실행 화면 아님",
+      "content_kind": "synthetic",
+      "provenance": {
+        "source_url": null,
+        "rights_status": "owned",
+        "rights_note": "기존 mock의 이름·summary·method를 바탕으로 툴밋 개발 작업에서 직접 작성한 SVG. 외부 이미지·로고를 복제하지 않았으며 실제 서비스 화면·실행 결과가 아닙니다.",
+        "checked_at": null
+      },
+      "text_sources": [
+        "shared/data/brief_mock.json#local-review"
+      ],
+      "text_fields": [
+        "name",
+        "summary",
+        "method"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="440" viewBox="0 0 720 440" role="img" aria-labelledby="title description">
+ <title id="title">회의록 → Sheets 공개 예제 · 합성 활용 설명 카드</title>
+ <desc id="description">로컬 텍스트·Claude·Google Sheets 연결 예제. 기존 mock 설명을 자체 제작 이미지로 표현했습니다. 실제 도구 화면이나 실행 결과가 아닙니다.</desc>
+ <rect width="720" height="440" rx="24" fill="#f3f6fc"/>
+ <circle cx="680" cy="55" r="145" fill="#377f9a" opacity=".06"/>
+ <g font-family="Pretendard, Malgun Gothic, Noto Sans KR, sans-serif">
+ <rect x="30" y="27" width="7" height="36" rx="3" fill="#377f9a"/>
+ <text x="51" y="55" fill="#22334e" font-size="27" font-weight="700">회의록 → Sheets 공개 예제</text>
+ <rect x="572" y="30" width="116" height="30" rx="15" fill="white"/>
+ <text x="630" y="50" text-anchor="middle" fill="#377f9a" font-size="12" font-weight="700">MOCK · 합성</text>
+ <text x="32" y="95" font-size="16" fill="#425775">로컬 텍스트·Claude·Google Sheets 연결 예제</text>
+ <rect x="30" y="142" width="660" height="201" rx="18" fill="white" stroke="#dfe7f3"/>
+ <text x="51" y="174" fill="#377f9a" font-size="12" font-weight="700">저장된 활용 방법 예시</text>
+ <circle cx="70" cy="211" r="20" fill="#377f9a" opacity=".10"/>
+ <text x="70" y="216" text-anchor="middle" fill="#377f9a" font-size="13" font-weight="700">01</text>
+ <text x="107" y="211" font-size="17" fill="#425775">작성자 경로와 열 매핑을 시험 환경에 맞게 바꾸기</text>
+ <line x1="70" y1="235" x2="70" y2="265" stroke="#377f9a" opacity=".25" stroke-width="2"/>
+ <circle cx="70" cy="287" r="20" fill="#377f9a" opacity=".10"/>
+ <text x="70" y="292" text-anchor="middle" fill="#377f9a" font-size="13" font-weight="700">02</text>
+ <text x="107" y="287" font-size="17" fill="#425775">운영 시트 대신 시험용 시트에서 행 중복·누락 검토하기</text>
+ <text x="32" y="383" fill="#556b87" font-size="13">설명용 자체 제작 이미지 · 실제 도구 화면/실행 결과 아님</text>
+ </g>
+ </svg>

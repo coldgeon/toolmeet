@@ -4,6 +4,7 @@ import path from "node:path";
 import {webcrypto} from "node:crypto";
 import {fileURLToPath} from "node:url";
 import vm from "node:vm";
+import {JSDOM} from "jsdom";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = JSON.parse(fs.readFileSync(path.join(root, "dist", "brief_mock.json"), "utf8"));
@@ -65,3 +66,112 @@ assert.equal(confirmed.status, 200);
 assert.match(confirmed.body.source_url, /^https:\/\//);
 assert.equal(externalRequests.length, 1);
 console.log("Static mock API: board, news, dynamic recommendations, and link gate passed");
+
+async function settleDom() {
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+}
+
+const packagedMedia = JSON.parse(fs.readFileSync(path.join(root, "dist", "media", "catalog", "provenance.json"), "utf8"));
+assert.equal(packagedMedia.contract_version, "exploration.v1");
+assert.deepEqual(packagedMedia.media.map((item) => item.project_id).sort(), source.candidates.map((item) => item.id).sort());
+for (const media of packagedMedia.media) {
+  assert.equal(media.content_kind, "synthetic");
+  assert.equal(media.provenance.rights_status, "owned");
+  assert(media.provenance.rights_note.trim());
+  assert(media.src.startsWith("media/catalog/"));
+  assert(!media.src.includes(".."));
+  const filename = path.join(root, "dist", media.src);
+  assert(fs.existsSync(filename), `Missing packaged image ${media.src}`);
+  const svg = new JSDOM(fs.readFileSync(filename, "utf8"), {contentType: "image/svg+xml"});
+  assert.equal(svg.window.document.documentElement.localName, "svg");
+  svg.window.close();
+}
+
+for (const prefix of ["/", "/toolmeet/"]) {
+  const base = new URL(prefix, "https://example.test");
+  for (const [filename, page] of [["index.html", ""], ["news/index.html", "news/"]]) {
+    const dom = new JSDOM(fs.readFileSync(path.join(root, "dist", filename), "utf8"), {url: new URL(page, base).href});
+    try {
+      for (const element of dom.window.document.querySelectorAll("script[src], link[rel=stylesheet][href], a[href]")) {
+        const raw = element.getAttribute("src") ?? element.getAttribute("href");
+        if (raw.startsWith("#")) continue;
+        const resolved = new URL(raw, dom.window.location.href);
+        assert.equal(resolved.origin, base.origin, `Unexpected external static link ${raw}`);
+        assert(resolved.pathname.startsWith(base.pathname), `Link escaped ${prefix}: ${raw}`);
+        const relative = resolved.pathname.slice(base.pathname.length);
+        const asset = relative.endsWith("/") || relative === "" ? relative + "index.html" : relative;
+        assert(fs.existsSync(path.join(root, "dist", asset)), `Missing ${prefix} asset/link ${raw}`);
+        assert(!["explore", "demo"].includes(relative), "Local demonstrations must stay out of static navigation");
+      }
+    } finally {
+      dom.window.close();
+    }
+  }
+
+  const dom = new JSDOM(fs.readFileSync(path.join(root, "dist", "index.html"), "utf8"), {url: base.href, runScripts: "outside-only"});
+  try {
+    const browser = dom.window;
+    const document = browser.document;
+    browser.Response = Response;
+    browser.Request = Request;
+    browser.matchMedia = () => ({matches: false, addEventListener() {}, removeEventListener() {}});
+    browser.HTMLElement.prototype.scrollIntoView = () => {};
+    const nativeRequests = [];
+    browser.fetch = async (input) => {
+      const url = new URL(input, base);
+      nativeRequests.push(url.href);
+      assert.equal(url.origin, base.origin);
+      assert(url.pathname.startsWith(prefix), `Data request escaped ${prefix}: ${url.href}`);
+      const relative = url.pathname.slice(prefix.length);
+      assert(["brief_mock.json", "media/catalog/provenance.json"].includes(relative), `Unexpected static network request ${relative}`);
+      return new Response(fs.readFileSync(path.join(root, "dist", relative), "utf8"));
+    };
+    for (const script of document.querySelectorAll("script[src]")) {
+      const relative = new URL(script.src).pathname.slice(prefix.length);
+      Object.defineProperty(document, "currentScript", {configurable: true, value: script});
+      browser.eval(fs.readFileSync(path.join(root, "dist", relative), "utf8"));
+      delete document.currentScript;
+    }
+    await settleDom();
+    assert.equal(document.getElementById("ask-tab").getAttribute("aria-selected"), "true");
+    document.getElementById("projects-tab").click();
+    const cards = [...document.querySelectorAll("#catalog-list .catalog-card")];
+    assert.deepEqual(cards.map((card) => card.dataset.projectId).sort(), source.candidates.map((item) => item.id).sort());
+    const catalog = await browser.ToolmeetCatalog.list();
+    assert.equal(catalog.data_mode, "mock");
+    for (const project of catalog.projects) {
+      assert.equal(Object.hasOwn(project, "source_url"), false);
+      assert.equal(project.cost.state, "unknown");
+      assert.equal(project.cost.amount, null);
+      assert(project.method.every((step) => step.origin === "mock"));
+      const card = cards.find((item) => item.dataset.projectId === project.id);
+      const image = card.querySelector(".catalog-image");
+      assert.equal(image.dataset.projectId, project.id);
+      assert.equal(card.querySelector(".catalog-media-label").textContent, "합성 설명 · 실제 실행 화면 아님");
+      assert.equal(new URL(image.src).pathname, prefix + project.media[0].src);
+      assert(project.media.every((item) => item.project_id === project.id));
+    }
+    assert(nativeRequests.some((request) => request === new URL("brief_mock.json", base).href));
+    assert(nativeRequests.some((request) => request === new URL("media/catalog/provenance.json", base).href));
+    document.getElementById("ask-tab").click();
+    const work = document.getElementById("work");
+    work.value = source.board_posts[0].work;
+    work.dispatchEvent(new browser.Event("input", {bubbles: true}));
+    for (const [id, value] of Object.entries({policy: "allowed", installation: "allowed", ecosystem: "google", "data-kind": "public", hosting: "self_hosted"})) document.getElementById(id).value = value;
+    document.getElementById("brief-form").requestSubmit();
+    await settleDom();
+    assert.equal(document.getElementById("results").hidden, false);
+    assert.equal(document.querySelector(".source-link"), null);
+    const candidate = document.querySelector(".candidate:has(.confirm-button)");
+    assert(candidate);
+    candidate.querySelector(".preview-button").click();
+    candidate.querySelector(".confirm-button").click();
+    await settleDom();
+    assert.match(document.querySelector(".source-link").href, /^https:\/\//);
+    assert(nativeRequests.every((request) => !new URL(request).pathname.includes("/api/")), "Static recommendation requests must stay inside the mock API");
+  } finally {
+    dom.window.close();
+  }
+}
+console.log("Static exploration: saved mock images, two tabs, confirmed links, and /toolmeet/ paths passed");

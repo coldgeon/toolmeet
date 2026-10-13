@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node dev.mjs",
     "build": "node build.mjs",
-    "test": "node --test tests/brief.test.mjs && node build.mjs && node tests/static.test.mjs"
+    "test": "node --test tests/brief.test.mjs tests/exploration.test.mjs && node build.mjs && node tests/static.test.mjs"
   },
   "devDependencies": {
     "jsdom": "26.1.0"
