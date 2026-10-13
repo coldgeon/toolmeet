@@ -2,9 +2,9 @@
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 공동 작업 절차 #10 · 이슈·PR 템플릿과 검사 작업 중
+## 공동 작업 절차 #10 · PR 검토 중
 
-- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 현재 `chore/10-agent-workflow`의 별도 worktree에서 작업하며 main에는 아직 반영되지 않았다.
+- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결하고 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)을 열었다. 현재 `chore/10-agent-workflow`의 별도 worktree에서 작업하며 main에는 아직 반영되지 않았다.
 - GitHub `main`은 보호 브랜치가 아니고 활성 ruleset이 없다. CI 형식 검사를 머지 조건으로 강제하고 직접 push를 막으려면 저장소 관리자의 ruleset 설정이 필요하다. 현재 작업 계정에는 관리자 권한이 없다.
 
 ## 두 탐색 탭·집중 입력 #4 · main 반영
