@@ -9,7 +9,9 @@
     "dev:frontend": "npm run dev --workspace @toolmeet/frontend",
     "dev:backend": "npm run dev --workspace @toolmeet/backend",
     "build": "npm run build --workspace @toolmeet/frontend",
-    "test": "npm run test --workspaces && node scripts/test_integration.mjs",
+    "test": "node --test scripts/workflow_policy.test.mjs && npm run test --workspaces && node scripts/test_integration.mjs",
+    "task:start": "node scripts/start_issue.mjs",
+    "task:overlap": "node scripts/check_overlap.mjs",
     "test:frontend": "npm run test --workspace @toolmeet/frontend",
     "test:backend": "npm run test --workspace @toolmeet/backend",
     "test:integration": "node scripts/test_integration.mjs"

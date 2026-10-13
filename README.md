@@ -58,6 +58,7 @@ npm run build
 - 탐색·질문 UX의 후속 mock 기준은 [연동 계약 v1](docs/contracts/exploration-v1.md)과 [합성 예시](docs/contracts/exploration-v1.examples.json)를 따른다. 새 HTTP API는 별도 협의·구현 사항이다.
 - 공용 데이터 형식을 바꾸면 `npm test`로 양쪽 응답을 확인합니다.
 - 변경은 브랜치와 PR로 검토하고, GitHub Actions에서 Windows·Linux 검증을 진행합니다.
+- 이슈·PR 공통 템플릿, 이슈별 worktree 시작 명령, 충돌 확인 순서는 [공동 작업 절차](docs/COLLABORATION.md)를 따릅니다. 예: `npm run task:start -- 12 chore agent-workflow`.
 - 최신 범위는 [현재 상태](docs/CURRENT.md), 변경·검증 기록은 [인계](docs/HANDOFF.md), 제품 기준은 [기획](docs/PLAN.md)과 [완료 기준](docs/ACCEPTANCE.md)를 확인합니다.
 
 원본은 [seongwwww/u-solve](https://github.com/seongwwww/u-solve)의 `61831ec`입니다. 원본 커밋 이력과 기존 시연을 보존해 [coldgeon/toolmeet](https://github.com/coldgeon/toolmeet)로 이전했습니다. 기존 Sites 배포 설정은 `docs/legacy/site.openai/hosting.json`에 과거 기록으로 보관했습니다. AWS 소규모 구성은 [draw.io 제안 설계](architecture/Toolmeet_Architecture_v1.drawio) 단계입니다.

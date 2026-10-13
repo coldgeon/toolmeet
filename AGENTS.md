@@ -4,6 +4,9 @@
 - 화면 원본은 `frontend/src/`, Python API는 `backend/`, 공용 데이터·분류 규칙은 `shared/data/`다. 정적 배포용 화면 복사본을 만들지 않는다.
 - 실행은 루트 `npm run dev`, 검증은 `npm test`, 정적 빌드는 `npm run build`다. 백엔드는 API만 제공하고 프론트엔드 개발 서버가 `/api/*`를 전달한다.
 - 일반 테스트에서 실제 Codex·유료 API를 호출하지 않는다. 모노레포 구조 정리는 제품 기획 단계가 아니며 기획 검토용 하위 에이전트를 요구하지 않는다.
+- 모든 새 이슈·PR과 작업 격리 절차는 `docs/COLLABORATION.md`를 따른다. 이슈는 `.github/ISSUE_TEMPLATE/task.md`, PR은 `.github/pull_request_template.md`의 항목을 빠짐없이 채운다. 사용자가 이슈부터 PR까지 한 번에 지시했다면 해당 범위를 진행한다.
+- 구현 전에 기존 이슈·열린 PR의 변경 경로를 확인한다. 이슈별 브랜치와 별도 worktree를 최신 `origin/main`에서 만들고, 다른 작업자의 미커밋 변경을 옮기거나 덮어쓰지 않는다. 같은 이슈의 브랜치를 여러 에이전트가 동시에 수정하지 않는다.
+- 이슈 하나에 PR 하나를 연결하고 PR 본문의 `Closes #번호`와 브랜치 번호를 일치시킨다. PR 전 `npm run task:overlap`으로 최신 main과 열린 PR의 겹치는 경로를 확인하고 충돌을 해결하거나 작업 순서를 조정한다. CI의 형식 검사 결과와 사람 검토를 확인한다.
 
 - 사용자와 한국어로 대화한다.
 - 작업 시작 시 `docs/CURRENT.md`, `docs/HANDOFF.md`를 먼저 읽는다.
