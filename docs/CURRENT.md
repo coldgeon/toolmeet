@@ -2,14 +2,20 @@
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 두 탐색 탭·집중 입력 #4 · 구현 완료 / PR 초안 검토
+## 공동 작업 절차 #10
+- 에이전트 시작 규칙은 루트 `AGENTS.md` 첫 부분에 있고, `CLAUDE.md`와 `.github/copilot-instructions.md`가 같은 원본을 가리킨다. 작업자가 최신 기본 브랜치를 받은 뒤 확인할 수 있다. 임의의 에이전트가 자동으로 읽는다고 보장하지는 않는다.
+
+- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 변경은 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)에서 관리한다.
+- GitHub `main`은 보호 브랜치가 아니고 활성 ruleset이 없다. CI 형식 검사를 머지 조건으로 강제하고 직접 push를 막으려면 저장소 관리자의 ruleset 설정이 필요하다. 현재 작업 계정에는 관리자 권한이 없다.
+
+## 두 탐색 탭·집중 입력 #4 · main 반영
 
 - 사용자 `좋아, #4는 기존 스택으로 구현 시작해.` 지시로 최신 main `5460da458d57ec816dc881b72bdebacf195e440f`에서 연결한 `feat/4-exploration-tabs` 브랜치의 별도 worktree에서 구현했다. HTML·CSS·Vanilla JavaScript와 기존 Node 개발/빌드·jsdom 테스트를 유지했다.
 - `/`에서 `AI에게 질문하기`와 `모든 프로젝트 보기`를 분리했다. 초기 중앙 질문 입력 뒤로 저장된 합성 카드가 반복 상승하며 입력 클릭·키보드 포커스 뒤 흰 집중 상태로 바뀐다. 초점 이탈로 모션을 재시작하지 않으며 수동 정지·움직임 감소 설정을 지원한다.
 - 탭 이동은 질문·다섯 조건·현재 추천·미리보기·확인 링크를 보존한다. 명시적 새 질문은 질문·조건·추천·확인 상태와 이전 요청을 초기화하며 수동 모션 정지 선호를 보존한다. 첫 화면의 환경 설정과 시연 질문 목록은 접어 두었다.
 - `catalog.js`는 기존 공용 mock 후보를 exploration.v1 DTO로 읽는 교체 가능한 frontend 어댑터다. 목록과 배경은 같은 8개 ID를 사용하며 자체 제작 저장 SVG·권리/합성 표시를 연결했다. 누락·이미지 실패·권리 미확인은 설명으로 대체한다. 실제 조사·도구 실행·요금 검증·실제 서비스 화면 연결을 완료한 것으로 표시하지 않는다.
 - 전체 테스트(DOM 44개·Python 13개·정적 mock/하위 경로·HTTP 통합 15조합)와 정적 빌드가 통과했다. 브라우저에서 1440px 및 320·360·390px, 360×560px 키보드 입력, 탭·정지·기본 결과/확인·뉴스→질문·`/toolmeet/`를 확인했다. OS 움직임 감소 설정·실제 휴대폰·스크린리더는 직접 시험하지 않았다.
-- [#5 대화·추천](https://github.com/coldgeon/toolmeet/issues/5), [#6 프리뷰·상세](https://github.com/coldgeon/toolmeet/issues/6)는 별도 구현 범위다. backend/shared 원본은 변경하지 않았으며 PR 생성·머지·배포는 별도 사용자 승인 대기다.
+- [PR #9](https://github.com/coldgeon/toolmeet/pull/9)가 `d195f0e`로 main에 병합되고 #4가 종료됐다. [#5 대화·추천](https://github.com/coldgeon/toolmeet/issues/5), [#6 프리뷰·상세](https://github.com/coldgeon/toolmeet/issues/6)는 별도 구현 범위다. backend/shared 원본과 제품 배포는 변경하지 않았다.
 
 ## 탐색·질문 UX 계약 #3 · main 반영
 

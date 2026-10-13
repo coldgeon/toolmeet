@@ -1,5 +1,16 @@
 # 툴밋 인계
 
+## 2026-10-13 이슈 #10 공동 작업 절차 · PR #11
+
+- 작업 시작 규칙을 루트 `AGENTS.md`의 맨 위 "작업 시작 전 필수 확인"으로 옮기고, `CLAUDE.md`와 `.github/copilot-instructions.md`에서 같은 원본을 가리키도록 했다. 도구가 해당 파일을 읽는지와 최신 기본 브랜치를 받았는지에 따라 실제 적용이 달라진다는 한계를 `docs/COLLABORATION.md`에 명시했다.
+- 후속 문서 변경은 `git diff --check`와 파일 경로·참조 확인으로 검증했다. 제품 코드가 바뀌지 않아 기능 테스트는 앞선 전체 `npm test`·`npm run build` 결과를 유지했다. 최신 기능·문서 커밋 `bee7873`에서 Windows·Linux CI가 모두 성공했다.
+- 최신 원격 main `d195f0e`에서 별도 worktree `C:/Users/s2608/orca/toolmeet-agent-workflow`와 `chore/10-agent-workflow` 브랜치로 작업했다. 기존 로컬 main의 미커밋 `CURRENT.md`·`HANDOFF.md`는 옮기거나 덮어쓰지 않았다. [#10](https://github.com/coldgeon/toolmeet/issues/10)은 공통 항목을 채워 등록했다.
+- `.github/ISSUE_TEMPLATE/task.md`, `.github/pull_request_template.md`, `docs/COLLABORATION.md`에 이슈·PR 형식과 이슈별 격리·열린 PR 경로 확인·충돌 조정 순서를 기록했다. `npm run task:start -- <번호> <유형> <이름>`은 이슈 본문·상태·중복 브랜치·대상 폴더를 확인하고 최신 origin/main에서 별도 worktree를 만든다. `npm run task:overlap`은 커밋된 변경과 열린 PR의 경로 중복·최신 main 포함을 확인한다.
+- PR의 이슈 하나 연결·브랜치 번호·필수 항목·체크리스트를 `workflow-policy` CI가 검사한다. `pull_request_target`에서 기본 브랜치의 검사 코드만 실행하고 이슈 조회에는 읽기 권한만 쓴다. 이 workflow는 main 반영 후부터 작동한다. `AGENTS.md`와 `README.md`에서 공동 절차를 참조한다. 제품 기능과 shared/data·backend는 변경하지 않았다.
+- 검증: `npm ci --ignore-scripts --no-audit --no-fund` 성공(`npm.cmd` 사용), 정책 테스트 3개, 전체 `npm test`(DOM 44개·Python 13개·정적·통합), `npm run build`, 새 이슈 #10의 worktree 명령 dry-run, workflow YAML 구문, `git diff --check`를 통과했다. 일반 테스트에서 실제 Codex·유료 API를 호출하지 않았다.
+- [PR #11](https://github.com/coldgeon/toolmeet/pull/11)을 이슈 하나에 연결해 생성했다. PR 본문을 로컬 정책 검사로 통과시켰고 Windows·Linux CI가 성공했다. 작업 중 다른 PR의 변경 경로와 겹침은 없었다.
+- 남은 문제: GitHub main 보호/ruleset은 현재 없고 이 계정은 관리자 권한이 없어 적용하지 못했다. 새 `pull_request_target` 검사는 기본 브랜치에 반영된 뒤 새 PR부터 실행된다. 템플릿과 CI만으로 직접 push나 실패한 PR의 머지를 서버에서 막을 수 없다. 다음은 저장소 관리자의 ruleset 설정과 후속 PR에서 새 정책 검사 실행 여부를 확인하는 것이다. 제품 배포는 진행하지 않았다.
+
 ## 2026-10-13 이슈 #4 구현 완료 · PR 초안 승인 대기
 
 - 승인 이슈: [#4 두 탐색 탭과 집중 입력 화면](https://github.com/coldgeon/toolmeet/issues/4). 사용자 `좋아, #4는 기존 스택으로 구현 시작해.`로 해당 이슈의 구현 시작을 지시받았다. 최신 main `5460da458d57ec816dc881b72bdebacf195e440f`에서 Development에 연결한 `feat/4-exploration-tabs` 브랜치·별도 worktree `C:/Users/cksrj/.codex/worktrees/issue-4-exploration-tabs/u-solve`를 사용했다. 원래 작업 폴더의 다른 채팅 미커밋 변경을 보존했다.
