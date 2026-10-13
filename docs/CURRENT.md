@@ -8,7 +8,7 @@
 - 업무·답변·조건·프로젝트 맥락 변경 및 같은 revision 재평가가 이전 추천·확인·링크를 즉시 지운다. 최신 revision/request_id와 검증된 DTO만 적용하고 확인은 추천 요청·token까지 비교한다. 오류·탭 왕복·대기 중 응답에도 질문/답변/편집 초안을 유지한다. 클라이언트 무효화를 서버 token 폐기로 주장하지 않는다.
 - 전체 `npm test`(대화/DOM·어댑터 124개, Python 13개, 정책 3개, 정적/하위 경로·HTTP 통합 15조합)와 `npm run build`가 통과했다. 브라우저 1440×900, 320/360/390×800, 360×560의 대화·추천·키보드·탭 입력 보존·확인 링크·뉴스→질문·정적 `/toolmeet/`를 확인했다. 실제 휴대폰/소프트 키보드·스크린리더·OS 움직임 감소 설정·실제 AI·새 PR CI·배포는 미검증이다.
 - 사용자 `좋아, #5 PR 초안 승인해. #13 문서 반영 후 최신 main에 맞추고 중복 검사 통과하면 PR 생성해줘.`로 PR 제목·본문 초안과 선행 문서 정리 후 일반 PR 생성을 승인받았다. 확인 시 #13은 OPEN이며 main은 변경되지 않았다. #5의 승인된 제품 코드·검증 결과는 그대로 보존한다. 머지·태그·배포 승인은 없다.
-- [PR #13](https://github.com/coldgeon/toolmeet/pull/13)이 main `61254d1f866ac9485dd40b574f58bc6940985df8`에 머지된 뒤 해당 main을 기존 #5 브랜치에 병합했다. CURRENT는 자동 병합하고 HANDOFF 상단 충돌은 #5 → #12 → 기존 이력 순서로 두 작업의 기록을 모두 보존했다. 승인된 제품 코드는 그대로이며 PR 생성 전 검증과 overlap을 재확인한다. #6 상세/프리뷰·실제 project_id 판정, backend/shared 원본, 조사 데이터 연결은 별도 범위다.
+- [PR #13](https://github.com/coldgeon/toolmeet/pull/13)이 main `61254d1f866ac9485dd40b574f58bc6940985df8`에 머지된 뒤 해당 main을 기존 #5 브랜치에 병합했다. CURRENT는 자동 병합하고 HANDOFF 상단 충돌은 #5 → #12 → 기존 이력 순서로 두 작업의 기록을 모두 보존했다. 승인된 제품 코드는 그대로이며 최신 main 반영 후 npm ci·전체 npm test·npm run build·git diff --check와 task:overlap이 통과했다(변경 경로 14개, 다른 열린 PR과 겹침 없음). #6 상세/프리뷰·실제 project_id 판정, backend/shared 원본, 조사 데이터 연결은 별도 범위다.
 
 
 기준: 2026-10-13, Asia/Seoul.

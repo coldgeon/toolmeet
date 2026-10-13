@@ -2,7 +2,7 @@
 
 ## 2026-10-13 #5 조건 확인 대화 · 구현·검증 완료
 
-- PR 생성 후속 실행: #13이 `61254d1f866ac9485dd40b574f58bc6940985df8`로 main에 머지된 것을 원본 GitHub와 fetch/ancestor 검사로 확인했다. 승인된 기존 브랜치에 최신 main을 병합했고 HANDOFF 상단 충돌은 #5와 #12 기록을 모두 보존했다. AGENTS/COLLABORATION의 #13 절차는 main 원본대로 유지했다. 이번 세션에는 호출 가능한 Discord 도구가 없어 채널/스레드 조회를 완료하지 않았으며 사용자 외부 메시지 금지에 따라 게시하지 않는다. GitHub 이슈·PR·저장소 원본으로 진행한다. 승인된 제품 코드가 바뀌지 않은 것을 비교하고 복구된 의존성으로 전체 검증 및 경로 중복 검사를 실행한 후 일반 PR을 생성한다.
+- PR 생성 후속 실행: #13이 `61254d1f866ac9485dd40b574f58bc6940985df8`로 main에 머지된 것을 원본 GitHub와 fetch/ancestor 검사로 확인했다. 승인된 기존 브랜치에 최신 main을 병합했고 HANDOFF 상단 충돌은 #5와 #12 기록을 모두 보존했다. AGENTS/COLLABORATION의 #13 절차는 main 원본대로 유지했다. 이번 세션에는 호출 가능한 Discord 도구가 없어 채널/스레드 조회를 완료하지 않았으며 사용자 외부 메시지 금지에 따라 게시하지 않는다. GitHub 이슈·PR·저장소 원본으로 진행한다. 승인된 제품 코드와 #13 협업 규칙 보존은 독립 읽기 비교로 확인했다. npm ci 복원 성공 뒤 최신 main 기준 전체 npm test(프론트 124, Python 13, 정책 3, 정적·15조합 HTTP 통합)·npm run build·git diff --check와 task:overlap이 모두 통과했다(변경 경로 14개, 다른 열린 PR과 겹침 없음). 승인된 제목·본문에서 기준 main·충돌 해결·검증 사실만 갱신해 일반 PR을 생성한다.
 
 - 사용자 인계 메시지가 기존 #5의 구현 재개를 명시해 이슈/브랜치/작업 폴더를 새로 만들지 않았다. 기존 `C:/Users/cksrj/.codex/worktrees/issue-5-question-conversation/u-solve`, `feat/5-question-conversation`에서 clean HEAD와 최신 origin/main `f387ab0180142be4d5c2caa50e878741488ecedc`, 열린 이슈 #5/문서 PR #13을 확인하고 시작했다. 공유 원래 폴더의 PM 미커밋 초안과 제품 파일은 복사하거나 수정하지 않았다.
 - `frontend/src/conversation.js`에 exploration.v1 snapshot·fact·question·추천·confirm 검증과 교체 가능한 mock evaluate/confirm 어댑터를 추가했다. 기존 후보 ID와 판정 API를 재사용한다. 알려진 명시 예시 구절만 facts로 읽고 부정/모호한 구절은 조건으로 추정하지 않으며 명시 답변을 우선하고 충돌 확인 이유를 표시한다. 원하는 결과가 빠지면 자유 답변 하나를 묻고 후보의 미확인 필수조건만 선택한다. 충분한 정보는 즉시 추천, 모름/내부 자료 등 다른 질문으로 풀 수 없는 보류는 조건 확인 필요로 마무리한다.
