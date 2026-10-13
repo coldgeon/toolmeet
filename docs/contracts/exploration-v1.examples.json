@@ -1,0 +1,947 @@
+{
+  "contract_version": "exploration.v1",
+  "note": "문서 정합성 검사용 내부 합성 예시. 토큰은 실제 값이 아니며 자산을 확보하거나 새 API를 실행한 기록이 아니다.",
+  "catalog": {
+    "contract_version": "exploration.v1",
+    "data_mode": "mock",
+    "data_note": "기존 brief 후보의 형식 변환 예시 · 실제 기능/요금 미검증",
+    "projects": [
+      {
+        "id": "chatgpt",
+        "name": "ChatGPT",
+        "kind": "service",
+        "tasks": [
+          "meeting",
+          "summary",
+          "planning",
+          "forms",
+          "coding"
+        ],
+        "summary": "대화형으로 초안과 정리 방법을 시험할 후보",
+        "method": [
+          {
+            "text": "공개·합성 예시로 원하는 결과 형식을 적기",
+            "origin": "mock",
+            "evidence_ids": [
+              "brief-chatgpt"
+            ]
+          },
+          {
+            "text": "출력의 누락과 원문 근거를 사람이 대조하기",
+            "origin": "mock",
+            "evidence_ids": [
+              "brief-chatgpt"
+            ]
+          }
+        ],
+        "requirements": {
+          "external_ai": {
+            "state": "known",
+            "value": true,
+            "evidence_ids": [
+              "brief-chatgpt"
+            ]
+          },
+          "installation": {
+            "state": "known",
+            "value": false,
+            "evidence_ids": [
+              "brief-chatgpt"
+            ]
+          },
+          "ecosystems": {
+            "state": "known",
+            "value": [
+              "any"
+            ],
+            "evidence_ids": [
+              "brief-chatgpt"
+            ]
+          },
+          "hosting": {
+            "state": "unknown",
+            "value": null,
+            "evidence_ids": []
+          }
+        },
+        "cost": {
+          "state": "unknown",
+          "amount": null,
+          "currency": null,
+          "period": null,
+          "evidence_ids": []
+        },
+        "evidence": [
+          {
+            "id": "brief-chatgpt",
+            "level": "mock",
+            "claim": "서비스 후보 예시 · 현재 기능/요금 미검증",
+            "reference": "shared/data/brief_mock.json#chatgpt",
+            "checked_at": null
+          }
+        ],
+        "media": [],
+        "fallback": {
+          "kind": "text",
+          "label": "활용 방법 예시 · 실행 미검증",
+          "text": "공개·합성 예시로 원하는 결과를 적고 누락과 원문 근거를 사람이 대조합니다.",
+          "steps": []
+        }
+      },
+      {
+        "id": "local-review",
+        "name": "로컬 검토 체크리스트",
+        "kind": "internal_method",
+        "tasks": [
+          "meeting",
+          "summary",
+          "forms",
+          "coding",
+          "planning"
+        ],
+        "summary": "외부 전송 없이 업무 입력·결과·검토 기준을 정리하는 시작 방법",
+        "method": [
+          {
+            "text": "현재 업무 순서와 원하는 결과 한 건 기록",
+            "origin": "mock",
+            "evidence_ids": [
+              "brief-local-review"
+            ]
+          },
+          {
+            "text": "누락·오류 기준과 시험용 자료 준비",
+            "origin": "mock",
+            "evidence_ids": [
+              "brief-local-review"
+            ]
+          }
+        ],
+        "requirements": {
+          "external_ai": {
+            "state": "known",
+            "value": false,
+            "evidence_ids": [
+              "brief-local-review"
+            ]
+          },
+          "installation": {
+            "state": "known",
+            "value": false,
+            "evidence_ids": [
+              "brief-local-review"
+            ]
+          },
+          "ecosystems": {
+            "state": "known",
+            "value": [
+              "any"
+            ],
+            "evidence_ids": [
+              "brief-local-review"
+            ]
+          },
+          "hosting": {
+            "state": "unknown",
+            "value": null,
+            "evidence_ids": []
+          }
+        },
+        "cost": {
+          "state": "unknown",
+          "amount": null,
+          "currency": null,
+          "period": null,
+          "evidence_ids": []
+        },
+        "evidence": [
+          {
+            "id": "brief-local-review",
+            "level": "mock",
+            "claim": "툴밋 시연용 방법 · 외부 도구 실행 아님",
+            "reference": "shared/data/brief_mock.json#local-review",
+            "checked_at": null
+          }
+        ],
+        "media": [],
+        "fallback": {
+          "kind": "text",
+          "label": "업무 준비 방법 예시 · 실행 미검증",
+          "text": "현재 업무 순서와 원하는 결과를 기록하고 누락·오류 기준과 시험용 자료를 준비합니다.",
+          "steps": []
+        }
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "normal_question",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-normal",
+        "revision": 0,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": []
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-normal",
+        "revision": 0,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "environment",
+        "status": "question",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          }
+        },
+        "question": {
+          "id": "q-policy",
+          "field": "policy",
+          "prompt": "외부 AI 서비스를 사용할 수 있나요?",
+          "type": "choice",
+          "options": [
+            {
+              "value": "allowed",
+              "label": "가능"
+            },
+            {
+              "value": "denied",
+              "label": "불가"
+            }
+          ],
+          "allow_unknown": true,
+          "allow_text": false
+        },
+        "recommendations": null,
+        "notice": "후보 연결을 바꾸는 미확인 조건 한 개만 묻는 예시입니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "early_ready",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-early",
+        "revision": 2,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": [
+          {
+            "id": "a-policy",
+            "question_id": "q-policy",
+            "field": "policy",
+            "state": "known",
+            "value": "allowed"
+          },
+          {
+            "id": "a-data",
+            "question_id": "q-data_kind",
+            "field": "data_kind",
+            "state": "known",
+            "value": "public"
+          }
+        ]
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-early",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "ready",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "possible",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "입력한 공개 자료·외부 AI 조건과 충돌 없음 · 실제 사용 미검증",
+              "first_gate": "공개·합성 자료로 지원 범위·권한·요금을 확인하세요.",
+              "first_check": "선택한 계정의 입력 방식·자료 취급·요금을 확인하세요."
+            }
+          ],
+          "token": {
+            "value": "example-brief-token",
+            "binding": "brief",
+            "revision": 2,
+            "expires_at": null
+          },
+          "supporting_methods": []
+        },
+        "notice": "필요한 정보가 충분한 합성 예시입니다. 질문 수를 채우기 위한 추가 질문은 없습니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "explicit_unknown",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-unknown",
+        "revision": 2,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": [
+          {
+            "id": "a-policy",
+            "question_id": "q-policy",
+            "field": "policy",
+            "state": "unknown",
+            "value": null
+          },
+          {
+            "id": "a-data",
+            "question_id": "q-data_kind",
+            "field": "data_kind",
+            "state": "known",
+            "value": "public"
+          }
+        ]
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-unknown",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "needs_confirmation",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "unknown",
+            "value": null,
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "hold",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "외부 AI 정책이 모름이어서 연결 판단을 보류합니다.",
+              "first_gate": "정책 담당자에게 사용 가능 범위를 확인하세요.",
+              "first_check": "확인 전에는 원본 연결이나 시험을 진행하지 않습니다."
+            }
+          ],
+          "token": null,
+          "supporting_methods": []
+        },
+        "notice": "모름 답변은 완료되었습니다. 같은 질문을 반복하지 않고 정책 담당자 확인을 안내합니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "edited_answer_and_project",
+      "previous_request_id": "turn-early",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-edited",
+        "revision": 3,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": "chatgpt",
+        "answers": [
+          {
+            "id": "a-policy",
+            "question_id": "q-policy",
+            "field": "policy",
+            "state": "unknown",
+            "value": null
+          },
+          {
+            "id": "a-data",
+            "question_id": "q-data_kind",
+            "field": "data_kind",
+            "state": "known",
+            "value": "public"
+          }
+        ]
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-edited",
+        "revision": 3,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "needs_confirmation",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "unknown",
+            "value": null,
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "hold",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "외부 AI 정책이 모름이어서 연결 판단을 보류합니다.",
+              "first_gate": "정책 담당자에게 사용 가능 범위를 확인하세요.",
+              "first_check": "확인 전에는 원본 연결이나 시험을 진행하지 않습니다."
+            }
+          ],
+          "token": null,
+          "supporting_methods": []
+        },
+        "notice": "답변·프로젝트 맥락 수정 전에 이전 추천 token·확인·링크를 제거합니다. 선택 프로젝트는 맥락 예시이며 현재 brief API에 적용되지 않습니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "empty_candidates",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-empty",
+        "revision": 0,
+        "work": "재고 발주 흐름을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": []
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-empty",
+        "revision": 0,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "empty",
+        "facts": {},
+        "question": null,
+        "recommendations": {
+          "candidates": [],
+          "token": null,
+          "supporting_methods": [
+            "local-review"
+          ]
+        },
+        "notice": "현재 mock 카탈로그의 관련 서비스·공개 프로젝트 후보가 없습니다. 내부 로컬 검토 방법은 별도 준비 설명으로 보존하고 원본 연결은 제공하지 않습니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "retryable_error",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-failed",
+        "revision": 2,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": [
+          {
+            "id": "a-policy",
+            "question_id": "q-policy",
+            "field": "policy",
+            "state": "known",
+            "value": "allowed"
+          },
+          {
+            "id": "a-data",
+            "question_id": "q-data_kind",
+            "field": "data_kind",
+            "state": "known",
+            "value": "public"
+          }
+        ]
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-failed",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "environment",
+        "status": "error",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": null,
+        "notice": "입력·답변을 보존하고 현재 snapshot으로 재시도할 수 있습니다.",
+        "error": {
+          "code": "unavailable",
+          "message": "시연 응답을 불러오지 못했습니다.",
+          "retryable": true,
+          "field_errors": []
+        }
+      }
+    },
+    {
+      "name": "retry_current_snapshot",
+      "previous_request_id": "turn-failed",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-retry",
+        "revision": 2,
+        "work": "회의록에서 결정과 할 일을 정리하고 싶어요.",
+        "project_id": null,
+        "answers": [
+          {
+            "id": "a-policy",
+            "question_id": "q-policy",
+            "field": "policy",
+            "state": "known",
+            "value": "allowed"
+          },
+          {
+            "id": "a-data",
+            "question_id": "q-data_kind",
+            "field": "data_kind",
+            "state": "known",
+            "value": "public"
+          }
+        ]
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-retry",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "ready",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "possible",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "입력한 공개 자료·외부 AI 조건과 충돌 없음 · 실제 사용 미검증",
+              "first_gate": "공개·합성 자료로 지원 범위·권한·요금을 확인하세요.",
+              "first_check": "선택한 계정의 입력 방식·자료 취급·요금을 확인하세요."
+            }
+          ],
+          "token": {
+            "value": "example-retry-token",
+            "binding": "brief",
+            "revision": 2,
+            "expires_at": null
+          },
+          "supporting_methods": []
+        },
+        "notice": "같은 revision의 새 request_id입니다. 이전 시도의 성공·오류·finally는 적용하지 않습니다.",
+        "error": null
+      }
+    },
+    {
+      "name": "free_text_question",
+      "request": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-text",
+        "revision": 0,
+        "work": "업무 문서를 더 쉽게 정리하고 싶어요.",
+        "project_id": null,
+        "answers": []
+      },
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-text",
+        "revision": 0,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "work",
+        "status": "question",
+        "facts": {},
+        "question": {
+          "id": "q-outcome",
+          "field": "outcome",
+          "prompt": "어떤 결과물을 만들고 싶나요?",
+          "type": "text",
+          "options": [],
+          "allow_unknown": true,
+          "allow_text": true
+        },
+        "recommendations": null,
+        "notice": "원하는 결과가 미확인일 때만 묻는 자유 입력 예시입니다.",
+        "error": null
+      }
+    }
+  ],
+  "confirmation": {
+    "request": {
+      "request_id": "confirm-current",
+      "revision": 2,
+      "candidate_id": "chatgpt",
+      "token": {
+        "value": "example-brief-token",
+        "binding": "brief",
+        "revision": 2,
+        "expires_at": null
+      },
+      "confirmed": true,
+      "recommendation_request_id": "turn-early"
+    },
+    "legacy_http_request": {
+      "brief_token": "example-brief-token",
+      "candidate_id": "chatgpt",
+      "confirmed": true
+    },
+    "response": {
+      "request_id": "confirm-current",
+      "revision": 2,
+      "status": "linked",
+      "source_url": "https://chatgpt.com/",
+      "notice": "원본 링크 안내 · 첫 시험 전",
+      "error": null,
+      "recommendation_request_id": "turn-early"
+    }
+  },
+  "arrival_cases": [
+    {
+      "name": "old_turn_after_edit",
+      "kind": "turn",
+      "current_revision": 3,
+      "latest_request_id": "turn-edited",
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-early",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "ready",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "possible",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "입력한 공개 자료·외부 AI 조건과 충돌 없음 · 실제 사용 미검증",
+              "first_gate": "공개·합성 자료로 지원 범위·권한·요금을 확인하세요.",
+              "first_check": "선택한 계정의 입력 방식·자료 취급·요금을 확인하세요."
+            }
+          ],
+          "token": {
+            "value": "example-brief-token",
+            "binding": "brief",
+            "revision": 2,
+            "expires_at": null
+          }
+        },
+        "notice": "필요한 정보가 충분한 합성 예시입니다. 질문 수를 채우기 위한 추가 질문은 없습니다.",
+        "error": null
+      },
+      "apply": false
+    },
+    {
+      "name": "old_confirm_after_edit",
+      "kind": "confirm",
+      "current_revision": 3,
+      "latest_request_id": "confirm-new",
+      "response": {
+        "request_id": "confirm-current",
+        "revision": 2,
+        "status": "linked",
+        "source_url": "https://chatgpt.com/",
+        "notice": "원본 링크 안내 · 첫 시험 전",
+        "error": null
+      },
+      "apply": false,
+      "active_recommendation_request_id": "turn-edited",
+      "active_token_value": null,
+      "captured_token_value": "example-brief-token"
+    },
+    {
+      "name": "old_error_after_retry",
+      "kind": "turn",
+      "current_revision": 2,
+      "latest_request_id": "turn-retry",
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-failed",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "environment",
+        "status": "error",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": null,
+        "notice": "입력·답변을 보존하고 현재 snapshot으로 재시도할 수 있습니다.",
+        "error": {
+          "code": "unavailable",
+          "message": "시연 응답을 불러오지 못했습니다.",
+          "retryable": true,
+          "field_errors": []
+        }
+      },
+      "apply": false
+    },
+    {
+      "name": "old_finally_after_retry",
+      "kind": "finally",
+      "current_revision": 2,
+      "latest_request_id": "turn-retry",
+      "response": {
+        "revision": 2,
+        "request_id": "turn-failed"
+      },
+      "apply": false
+    },
+    {
+      "name": "latest_retry_success",
+      "kind": "turn",
+      "current_revision": 2,
+      "latest_request_id": "turn-retry",
+      "response": {
+        "contract_version": "exploration.v1",
+        "request_id": "turn-retry",
+        "revision": 2,
+        "data_mode": "mock",
+        "data_note": "합성 계약 예시 · 실제 AI 추천/실행 결과 아님",
+        "phase": "recommendation",
+        "status": "ready",
+        "facts": {
+          "outcome": {
+            "state": "known",
+            "value": "결정과 할 일 정리",
+            "origin": "work",
+            "reference": "결정과 할 일을 정리"
+          },
+          "policy": {
+            "state": "known",
+            "value": "allowed",
+            "origin": "answer",
+            "reference": "a-policy"
+          },
+          "data_kind": {
+            "state": "known",
+            "value": "public",
+            "origin": "answer",
+            "reference": "a-data"
+          }
+        },
+        "question": null,
+        "recommendations": {
+          "candidates": [
+            {
+              "id": "chatgpt",
+              "status": "possible",
+              "reasons": [
+                "기존 회의·후속 작업 mock 후보를 표시한 합성 예시입니다."
+              ],
+              "fit_reason": "입력한 공개 자료·외부 AI 조건과 충돌 없음 · 실제 사용 미검증",
+              "first_gate": "공개·합성 자료로 지원 범위·권한·요금을 확인하세요.",
+              "first_check": "선택한 계정의 입력 방식·자료 취급·요금을 확인하세요."
+            }
+          ],
+          "token": {
+            "value": "example-retry-token",
+            "binding": "brief",
+            "revision": 2,
+            "expires_at": null
+          }
+        },
+        "notice": "같은 revision의 새 request_id입니다. 이전 시도의 성공·오류·finally는 적용하지 않습니다.",
+        "error": null
+      },
+      "apply": true
+    },
+    {
+      "name": "old_confirm_after_same_revision_retry",
+      "kind": "confirm",
+      "current_revision": 2,
+      "latest_request_id": "confirm-current",
+      "active_recommendation_request_id": "turn-retry",
+      "active_token_value": "example-retry-token",
+      "captured_token_value": "example-brief-token",
+      "response": {
+        "request_id": "confirm-current",
+        "revision": 2,
+        "status": "linked",
+        "source_url": "https://chatgpt.com/",
+        "notice": "원본 링크 안내 · 첫 시험 전",
+        "error": null,
+        "recommendation_request_id": "turn-early"
+      },
+      "apply": false
+    }
+  ],
+  "media_rejection_cases": [
+    {
+      "name": "missing_media",
+      "media": null,
+      "expected": "fallback"
+    },
+    {
+      "name": "unknown_rights",
+      "media": {
+        "id": "example-only",
+        "project_id": "chatgpt",
+        "kind": "image",
+        "src": "media/catalog/example-only.png",
+        "alt": "형식 설명용 예시",
+        "content_kind": "synthetic",
+        "provenance": {
+          "source_url": null,
+          "rights_status": "unknown",
+          "rights_note": "미확인",
+          "checked_at": null
+        }
+      },
+      "expected": "fallback"
+    },
+    {
+      "name": "parent_path",
+      "media": {
+        "id": "example-only",
+        "project_id": "chatgpt",
+        "kind": "image",
+        "src": "../example-only.png",
+        "alt": "형식 설명용 예시",
+        "content_kind": "synthetic",
+        "provenance": {
+          "source_url": null,
+          "rights_status": "owned",
+          "rights_note": "가정값 · 실제 자산 없음",
+          "checked_at": null
+        }
+      },
+      "expected": "fallback"
+    }
+  ]
+}

@@ -55,6 +55,7 @@ npm run build
 ## 협업 기준
 
 - 화면은 `frontend/`, API와 판정은 `backend/`, 공용 규칙과 샘플은 `shared/data/`에서 수정합니다.
+- 탐색·질문 UX의 후속 mock 기준은 [연동 계약 v1](docs/contracts/exploration-v1.md)과 [합성 예시](docs/contracts/exploration-v1.examples.json)를 따른다. 새 HTTP API는 별도 협의·구현 사항이다.
 - 공용 데이터 형식을 바꾸면 `npm test`로 양쪽 응답을 확인합니다.
 - 변경은 브랜치와 PR로 검토하고, GitHub Actions에서 Windows·Linux 검증을 진행합니다.
 - 최신 범위는 [현재 상태](docs/CURRENT.md), 변경·검증 기록은 [인계](docs/HANDOFF.md), 제품 기준은 [기획](docs/PLAN.md)과 [완료 기준](docs/ACCEPTANCE.md)를 확인합니다.

@@ -2,11 +2,18 @@
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 프론트엔드 이슈 #1 · PR 검토 대기
+## 탐색·질문 UX 계약 #3 · PR 초안 검토 단계
 
-- [#1](https://github.com/coldgeon/toolmeet/issues/1)의 구현 시작 지시에 따라 최신 main `4086d3d`에서 연결한 `fix/1-stale-brief-results` 브랜치의 별도 worktree에서 수정했다. PR은 아직 생성하지 않았으며 채팅의 PR 초안 승인이 필요하다.
+- 사용자 `구현 들어가자` 지시로 [#3](https://github.com/coldgeon/toolmeet/issues/3)의 선행 계약 문서를 최신 main `cc4ccdfe54ce41ab75e5780da379eaaa5e81c647`에서 만든 `docs/3-exploration-contract` 브랜치의 별도 worktree에 작성했다.
+- [탐색·질문 계약 v1](contracts/exploration-v1.md)과 [합성 JSON 예시](contracts/exploration-v1.examples.json)는 후속 frontend mock 어댑터 기준안이다. 실제 HTTP API는 협의용 제안이며 backend/shared 구현·데이터 조사·실제 AI·저장 미디어 연동을 완료한 것으로 표시하지 않는다.
+- [#4 두 탭·집중 입력](https://github.com/coldgeon/toolmeet/issues/4), [#5 대화·추천](https://github.com/coldgeon/toolmeet/issues/5), [#6 프리뷰·상세](https://github.com/coldgeon/toolmeet/issues/6)는 후속 화면 작업이다. 제품 화면은 아직 질문 게시판·별도 뉴스의 기존 mock이며 실제 UI 개편은 적용되지 않았다.
+- 실제 HTTP 도입·리서치 자료와 미디어·공용 데이터 반영은 담당 영역의 별도 승인 범위다. 이번 문서 PR 생성·머지·배포는 승인받지 않았다.
+
+## 프론트엔드 이슈 #1 · main 반영
+
+- [#1](https://github.com/coldgeon/toolmeet/issues/1)의 구현 시작 지시에 따라 최신 main `4086d3d`에서 연결한 `fix/1-stale-brief-results` 브랜치의 별도 worktree에서 수정했다. [PR #2](https://github.com/coldgeon/toolmeet/pull/2)가 cc4ccdf로 Squash merge되어 이슈 #1이 종료됐다.
 - 추천 대기 중에도 환경 변경을 반영하고, 질문·환경 변경 시 이전 후보·프론트엔드 토큰·원본 링크를 즉시 무효화한다. 이전 추천 및 링크 확인 응답은 최신 화면에 반영하지 않는다. 최신 오류 후 환경 변경으로 다시 계산할 수 있으며 첫 제출 전에는 환경만 바꿔 추천을 요청하지 않는다.
-- `jsdom@26.1.0`은 테스트용 개발 의존성이다. 실제 DOM 회귀 26개와 기존 전체 테스트·정적 빌드가 통과했다. 제품의 HTML·CSS·JavaScript 구조와 API·공용 데이터·mock 경계, `/news`·`/explore`·`/demo`는 유지한다. GitHub CI와 배포는 아직 실행하지 않았다.
+- `jsdom@26.1.0`은 테스트용 개발 의존성이다. 실제 DOM 회귀 26개와 기존 전체 테스트·정적 빌드가 통과했다. 제품의 HTML·CSS·JavaScript 구조와 API·공용 데이터·mock 경계, `/news`·`/explore`·`/demo`는 유지한다. PR 및 머지 후 Windows·Linux CI가 통과했다. 제품 배포는 실행하지 않았다.
 
 ## 저장소와 실행
 
