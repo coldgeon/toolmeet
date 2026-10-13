@@ -25,6 +25,7 @@ let home = fs.readFileSync(path.join(source, "index.html"), "utf8");
 home = removeLocalOnlyLinks(home);
 home = replaceRequired(home, 'href="/brief.css"', 'href="brief.css"');
 home = replaceRequired(home, 'src="/brief.js"', 'src="brief.js"');
+home = home.replaceAll('src="/catalog.js"', 'src="catalog.js"').replaceAll('src="/exploration.js"', 'src="exploration.js"');
 home = home.replaceAll('href="/news"', 'href="news/"').replaceAll('href="/"', 'href="./"');
 home = home.replace('LOCAL MOCK DEMO', 'MOCK DEMO').replace('로컬 프로토타입', '배포용 mock 프로토타입');
 home = home.replace('<script src="brief.js" defer></script>', '<script src="mock_api.js"></script>\n  <script src="brief.js" defer></script>');
@@ -43,8 +44,25 @@ newsJs = replaceRequired(newsJs, 'link.href = "/?work="', 'link.href = "../?work
 newsJs = newsJs.replaceAll('"/news?id="', '"./?id="').replaceAll('"/news"', '"./"');
 fs.writeFileSync(path.join(dist, "news.js"), newsJs);
 
-for (const filename of ["brief.css", "brief.js", "mock_api.js"]) {
+for (const filename of ["brief.css", "brief.js", "mock_api.js", "catalog.js", "exploration.js"]) {
   fs.copyFileSync(path.join(source, filename), path.join(dist, filename));
+}
+const mediaExtensions = new Set([".svg", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".json"]);
+function copyMedia(directory, target) {
+  fs.mkdirSync(target, {recursive: true});
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+    const original = path.join(directory, entry.name);
+    const output = path.join(target, entry.name);
+    if (entry.isDirectory() && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.name)) copyMedia(original, output);
+    else if (entry.isFile() && /^[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+$/.test(entry.name) && mediaExtensions.has(path.extname(entry.name))) {
+      fs.copyFileSync(original, output);
+    }
+  }
+}
+const mediaSource = path.join(source, "media");
+if (fs.existsSync(mediaSource)) {
+  if (fs.lstatSync(mediaSource).isSymbolicLink()) throw new Error("Media source must stay inside frontend/src.");
+  copyMedia(mediaSource, path.join(dist, "media"));
 }
 const feed = JSON.parse(fs.readFileSync(path.join(data, "brief_mock.json"), "utf8"));
 feed.topic_rules = JSON.parse(fs.readFileSync(path.join(data, "topic_rules.json"), "utf8"));

@@ -5,6 +5,9 @@ import {fileURLToPath} from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const source = path.join(root, "src");
+const data = path.join(root, "..", "shared", "data");
+const mediaTypes = {".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+  ".webp": "image/webp", ".mp4": "video/mp4", ".webm": "video/webm", ".json": "application/json"};
 const assets = {
   "/": ["index.html", "text/html"],
   "/news": ["news.html", "text/html"],
@@ -12,7 +15,7 @@ const assets = {
   "/explore": ["explore.html", "text/html"],
   "/demo": ["legacy.html", "text/html"],
 };
-for (const name of ["brief.js", "news.js", "app.js", "legacy.js"]) assets[`/${name}`] = [name, "text/javascript"];
+for (const name of ["brief.js", "news.js", "app.js", "legacy.js", "catalog.js", "exploration.js"]) assets[`/${name}`] = [name, "text/javascript"];
 for (const name of ["brief.css", "discover.css", "style.css"]) assets[`/${name}`] = [name, "text/css"];
 
 export function createFrontendServer({backendPort = 8765} = {}) {
@@ -39,13 +42,34 @@ export function createFrontendServer({backendPort = 8765} = {}) {
     if (!["GET", "HEAD"].includes(request.method)) {
       response.writeHead(405); response.end(); return;
     }
-    const asset = assets[pathname];
-    if (!asset) { response.writeHead(404); response.end("Not found"); return; }
     try {
-      const body = await fs.readFile(path.join(source, asset[0]));
-      response.writeHead(200, {"Content-Type": `${asset[1]}; charset=utf-8`, "Content-Length": body.length, "Cache-Control": "no-store"});
+      let body, contentType;
+      const asset = assets[pathname];
+      if (pathname === "/brief_mock.json") {
+        // Serve the same mock source as the static build; this is a frontend asset, not a new API.
+        const [feed, rules] = await Promise.all(["brief_mock.json", "topic_rules.json"].map(async (name) =>
+          JSON.parse(await fs.readFile(path.join(data, name), "utf8"))));
+        body = Buffer.from(JSON.stringify({...feed, topic_rules: rules}) + "\n");
+        contentType = "application/json; charset=utf-8";
+      } else if (asset) {
+        body = await fs.readFile(path.join(source, asset[0]));
+        contentType = `${asset[1]}; charset=utf-8`;
+      } else if (/^\/media\/catalog\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)*[a-z0-9]+(?:-[a-z0-9]+)*\.(?:svg|png|jpe?g|webp|mp4|webm|json)$/.test(pathname)) {
+        const file = path.resolve(source, "." + pathname);
+        const [realSource, realFile] = await Promise.all([fs.realpath(source), fs.realpath(file)]);
+        const relative = path.relative(realSource, realFile);
+        if (relative.startsWith("..") || path.isAbsolute(relative)) { response.writeHead(404); response.end("Not found"); return; }
+        body = await fs.readFile(realFile);
+        contentType = mediaTypes[path.extname(file)];
+      } else {
+        response.writeHead(404); response.end("Not found"); return;
+      }
+      response.writeHead(200, {"Content-Type": contentType, "Content-Length": body.length, "Cache-Control": "no-store"});
       response.end(request.method === "HEAD" ? undefined : body);
     } catch (error) {
+      if (error.code === "ENOENT" && pathname.startsWith("/media/")) {
+        response.writeHead(404); response.end("Not found"); return;
+      }
       response.writeHead(500); response.end("Unable to load frontend asset");
       console.error(error.message);
     }

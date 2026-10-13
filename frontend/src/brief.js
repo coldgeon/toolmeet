@@ -9,6 +9,10 @@ function node(tag, className = "", value = "") {
   return item;
 }
 
+function scrollToElement(target, block) {
+  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  target.scrollIntoView({behavior: reduced ? "auto" : "smooth", block});
+}
 function profile() {
   return {
     work: $("work").value,
@@ -33,7 +37,7 @@ function invalidateResults() {
 function candidateJump(id) {
   const target = document.getElementById("candidate-" + id);
   if (!target) return;
-  target.scrollIntoView({behavior: "smooth", block: "center"});
+  scrollToElement(target, "center");
   target.classList.add("focused");
   setTimeout(() => target.classList.remove("focused"), 1800);
 }
@@ -133,6 +137,7 @@ function renderCandidate(item) {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         panel.append(link);
+        if (!$("ask-panel")?.hidden) link.focus({preventScroll: true});
       } catch (error) {
         if (!isCurrent()) return;
         panel.append(node("p", "hold-note", error.message));
@@ -167,6 +172,7 @@ function render(data) {
 }
 
 async function refresh(scrollToAnswer = false) {
+  document.dispatchEvent(new Event("toolmeet:focus-question"));
   const request = invalidateResults();
   if ($("work").value.trim().length < 8) {
     state.submitted = false;
@@ -190,7 +196,10 @@ async function refresh(scrollToAnswer = false) {
     if (!response.ok) throw new Error(data.error || "결과를 가져오지 못했습니다.");
     if (request !== state.request) return;
     render(data);
-    if (scrollToAnswer) $("results").scrollIntoView({behavior: "smooth", block: "start"});
+    if (scrollToAnswer && !$("ask-panel")?.hidden) {
+      $("asked-question").focus({preventScroll: true});
+      scrollToElement($("results"), "start");
+    }
   } catch (error) {
     if (request !== state.request) return;
     $("status").textContent = error.message;
@@ -248,16 +257,29 @@ $("work").addEventListener("input", () => {
 });
 $("edit-environment").addEventListener("click", () => {
   $("environment-details").open = true;
-  $("environment-details").scrollIntoView({behavior: "smooth", block: "center"});
+  scrollToElement($("environment-details"), "center");
 });
 document.querySelectorAll("[data-board-topic]").forEach((item) => item.addEventListener("click", () => {
   state.boardTopic = item.dataset.boardTopic;
   document.querySelectorAll("[data-board-topic]").forEach((button) => button.classList.toggle("selected", button === item));
   renderBoard();
 }));
+document.addEventListener("toolmeet:new-question", () => {
+  state.submitted = false;
+  invalidateResults();
+  $("brief-form").reset();
+  $("environment-details").open = false;
+  $("question-examples").open = false;
+  $("asked-question").textContent = "";
+  $("topic-description").textContent = "";
+  $("status").hidden = true;
+  $("status").textContent = "";
+  $("submit").disabled = false;
+});
 loadBoard();
 const linkedWork = new URLSearchParams(window.location.search).get("work");
 if (linkedWork) {
   $("work").value = linkedWork.slice(0, 1000);
+  $("work").focus();
   refresh(true);
 }
