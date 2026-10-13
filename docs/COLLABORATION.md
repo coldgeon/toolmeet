@@ -2,6 +2,8 @@
 
 이 문서는 사람과 작업 에이전트가 같은 절차를 쓰기 위한 저장소 기준이다. 이슈 작성은 [.github/ISSUE_TEMPLATE/task.md](../.github/ISSUE_TEMPLATE/task.md), PR 작성은 [.github/pull_request_template.md](../.github/pull_request_template.md)를 따른다. 기존 [#4 이슈](https://github.com/coldgeon/toolmeet/issues/4)는 작성 예시다.
 
+저장소 규칙의 시작점은 루트 [AGENTS.md](../AGENTS.md)의 "작업 시작 전 필수 확인"이다. Claude Code용 `CLAUDE.md`와 GitHub Copilot용 `.github/copilot-instructions.md`는 같은 규칙을 가리킨다. 각 도구가 이 파일을 읽는 방식은 해당 도구의 동작에 달려 있으므로, 임의의 에이전트에게 자동 적용된다고 가정하지 않는다. 새 규칙은 PR이 기본 브랜치에 반영되고 작업자가 최신 코드를 받은 뒤부터 확인할 수 있다.
+
 ## 한 작업의 순서
 
 1. `docs/CURRENT.md`와 `docs/HANDOFF.md`를 먼저 읽고, 기획·인터뷰라면 `docs/PLAN.md`와 `docs/ACCEPTANCE.md`도 읽는다. 기존 이슈와 열린 PR을 찾아 중복 작업을 확인한다.

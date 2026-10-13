@@ -2,6 +2,8 @@
 
 ## 2026-10-13 이슈 #10 공동 작업 절차 · PR #11 검토 중
 
+- 작업 시작 규칙을 루트 `AGENTS.md`의 맨 위 "작업 시작 전 필수 확인"으로 옮기고, `CLAUDE.md`와 `.github/copilot-instructions.md`에서 같은 원본을 가리키도록 했다. 도구가 해당 파일을 읽는지와 최신 기본 브랜치를 받았는지에 따라 실제 적용이 달라진다는 한계를 `docs/COLLABORATION.md`에 명시했다.
+- 후속 문서 변경은 `git diff --check`와 파일 경로·참조 확인으로 검증했다. 제품 코드가 바뀌지 않아 기능 테스트는 앞선 전체 `npm test`·`npm run build` 결과를 유지하고, 새 PR 커밋의 Windows·Linux CI 결과를 확인한다.
 - 최신 원격 main `d195f0e`에서 별도 worktree `C:/Users/s2608/orca/toolmeet-agent-workflow`와 `chore/10-agent-workflow` 브랜치로 작업했다. 기존 로컬 main의 미커밋 `CURRENT.md`·`HANDOFF.md`는 옮기거나 덮어쓰지 않았다. [#10](https://github.com/coldgeon/toolmeet/issues/10)은 공통 항목을 채워 등록했다.
 - `.github/ISSUE_TEMPLATE/task.md`, `.github/pull_request_template.md`, `docs/COLLABORATION.md`에 이슈·PR 형식과 이슈별 격리·열린 PR 경로 확인·충돌 조정 순서를 기록했다. `npm run task:start -- <번호> <유형> <이름>`은 이슈 본문·상태·중복 브랜치·대상 폴더를 확인하고 최신 origin/main에서 별도 worktree를 만든다. `npm run task:overlap`은 커밋된 변경과 열린 PR의 경로 중복·최신 main 포함을 확인한다.
 - PR의 이슈 하나 연결·브랜치 번호·필수 항목·체크리스트를 `workflow-policy` CI가 검사한다. `pull_request_target`에서 기본 브랜치의 검사 코드만 실행하고 이슈 조회에는 읽기 권한만 쓴다. 이 workflow는 main 반영 후부터 작동한다. `AGENTS.md`와 `README.md`에서 공동 절차를 참조한다. 제품 기능과 shared/data·backend는 변경하지 않았다.
