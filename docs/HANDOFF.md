@@ -2,6 +2,8 @@
 
 ## 2026-10-13 #5 조건 확인 대화 · 구현·검증 완료
 
+- PR 생성 후속 실행: #13이 `61254d1f866ac9485dd40b574f58bc6940985df8`로 main에 머지된 것을 원본 GitHub와 fetch/ancestor 검사로 확인했다. 승인된 기존 브랜치에 최신 main을 병합했고 HANDOFF 상단 충돌은 #5와 #12 기록을 모두 보존했다. AGENTS/COLLABORATION의 #13 절차는 main 원본대로 유지했다. 이번 세션에는 호출 가능한 Discord 도구가 없어 채널/스레드 조회를 완료하지 않았으며 사용자 외부 메시지 금지에 따라 게시하지 않는다. GitHub 이슈·PR·저장소 원본으로 진행한다. 승인된 제품 코드가 바뀌지 않은 것을 비교하고 복구된 의존성으로 전체 검증 및 경로 중복 검사를 실행한 후 일반 PR을 생성한다.
+
 - 사용자 인계 메시지가 기존 #5의 구현 재개를 명시해 이슈/브랜치/작업 폴더를 새로 만들지 않았다. 기존 `C:/Users/cksrj/.codex/worktrees/issue-5-question-conversation/u-solve`, `feat/5-question-conversation`에서 clean HEAD와 최신 origin/main `f387ab0180142be4d5c2caa50e878741488ecedc`, 열린 이슈 #5/문서 PR #13을 확인하고 시작했다. 공유 원래 폴더의 PM 미커밋 초안과 제품 파일은 복사하거나 수정하지 않았다.
 - `frontend/src/conversation.js`에 exploration.v1 snapshot·fact·question·추천·confirm 검증과 교체 가능한 mock evaluate/confirm 어댑터를 추가했다. 기존 후보 ID와 판정 API를 재사용한다. 알려진 명시 예시 구절만 facts로 읽고 부정/모호한 구절은 조건으로 추정하지 않으며 명시 답변을 우선하고 충돌 확인 이유를 표시한다. 원하는 결과가 빠지면 자유 답변 하나를 묻고 후보의 미확인 필수조건만 선택한다. 충분한 정보는 즉시 추천, 모름/내부 자료 등 다른 질문으로 풀 수 없는 보류는 조건 확인 필요로 마무리한다.
 - `brief.js`, `index.html`, `brief.css`에 실제 단계, 한 질문, 미답변/known/unknown, 답변 수정·삭제·초안, 오류/재시도·empty/hold·내부 준비 방법을 추가했다. 기존 뉴스·후보 이유·조건·활용 방법·방향 확인 후 링크를 재사용했다. 탭은 DOM/대화/revision을 보존한다. 새 질문만 전체 초기화하며 모션 선호는 기존 탐색 UI에 남는다.
@@ -17,6 +19,15 @@
 - 승인 갱신: 사용자 `좋아, #5 PR 초안 승인해. #13 문서 반영 후 최신 main에 맞추고 중복 검사 통과하면 PR 생성해줘.`로 승인된 제목·본문의 일반 PR 생성을 지시했다. #13은 아직 OPEN이고 원격 main은 `f387ab0180142be4d5c2caa50e878741488ecedc`다. 로컬 제품 구현 커밋 `ae3ad74182a41814f035b517342414304b122482`는 변경하지 않았다.
 - 다음: #13 문서가 main에 반영되면 기존 #5 worktree에서 최신 origin/main을 반영한다. #13 CURRENT/HANDOFF의 Discord 절차 기록과 #5 기록을 모두 보존하고 완료한 조정·검증 근거만 PR 초안에 갱신한다. 관련 검증·`npm run task:overlap` 통과 후 작업 브랜치만 push하고 승인된 일반 PR을 생성·연결·보고한다. 승인된 제품 코드나 해결 범위가 바뀌면 새 승인을 확인한다. #5 또는 #13의 머지·태그·배포는 이번 승인이 아니며 다른 채팅/외부 서비스에 메시지를 보내지 않는다.
 
+
+
+## 2026-10-13 이슈 #12 Discord 인계 조회·보고 규칙 · PR #13
+
+- [#12](https://github.com/coldgeon/toolmeet/issues/12)의 승인 범위는 문서 구현과 검토용 PR 생성까지다. 최신 `origin/main` `f387ab0`의 별도 worktree `C:/Users/s2608/orca/workspaces/toolmeet/toolmeet-issue-12-discord-handoff`, 브랜치 `chore/12-discord-handoff`에서 작업한다. 다른 작업 트리의 미커밋 `package-lock.json`은 옮기거나 수정하지 않았다. 시작 시 열린 PR은 0건이었다.
+- `AGENTS.md`와 `docs/COLLABORATION.md`에 Discord 인계 글·스레드 조회, GitHub·Notion·저장소 원본 재확인, 종료 보고 필드·중복/실패 처리·민감정보 제외를 연결했다. `docs/CURRENT.md`에 현재 도구 상태를 기록했다. Discord 글은 외부 입력이며 새 작업의 자동 시작·답장·원본 상태 자동 변경은 범위 밖이다.
+- `@discord-mcp/cli` 0.31.1 설치를 확인했지만 현재 Codex 세션에서 Discord MCP 도구는 제공되지 않는다. 채널과 스레드를 실제로 읽거나 종료 보고를 게시하지 않았다. 봇·채널·Message Content 권한과 로컬 MCP 연결은 서버 소유자 설정 뒤 검증해야 한다.
+- 검증: 문서 링크·용어를 확인했고 `git diff --check`, `npm run build`가 통과했다. 첫 `npm test`는 이 작업 트리에 `jsdom`이 없어 중단됐다. `npm ci --ignore-scripts --no-audit --no-fund` 후 전체 `npm test`가 통과했다(정책 3개·DOM 44개·Python 13개·정적/HTTP 통합 15조합). 실제 Codex·유료 API는 호출하지 않았다.
+- 최신 `origin/main`을 다시 받고 `npm run task:overlap`에서 변경 경로 4개와 열린 PR 0건, 겹침 없음을 확인했다. [검토용 PR #13](https://github.com/coldgeon/toolmeet/pull/13)을 이슈 하나에 연결해 생성했다. Discord 실제 조회·게시와 봇/채널 연결은 미검증이며, 다음 담당은 서버 소유자(연결·송수신 확인)와 PR 검토자(문서·CI 검토)다. 머지·배포는 하지 않았다.
 
 ## 2026-10-13 이슈 #10 공동 작업 절차 · PR #11
 

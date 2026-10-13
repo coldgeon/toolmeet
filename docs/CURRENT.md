@@ -1,6 +1,6 @@
 # 툴밋 현재 상태
 
-## 2026-10-13 조건 확인 대화 #5 · PR 생성 승인, #13 문서 반영 대기
+## 2026-10-13 조건 확인 대화 #5 · PR 생성 승인, 최신 main 반영
 
 - [#5](https://github.com/coldgeon/toolmeet/issues/5)의 기존 구현 시작·재개 승인으로 전용 worktree와 `feat/5-question-conversation`을 재사용했다. 기준 main은 `f387ab0180142be4d5c2caa50e878741488ecedc`이며 제품 변경은 이 브랜치의 검토 결과다. PR 생성·머지·태그·배포는 진행하지 않았다.
 - `conversation.js`의 교체 가능한 frontend mock 어댑터가 exploration.v1 전체 snapshot을 받고 필요한 미확인 조건을 한 번에 하나씩 제공한다. 명시 예시 표현·기존 카탈로그 조건과 기존 `/api/brief`, `/api/brief/confirm`을 사용하며 새 backend 대화 API·실제 AI 이해/질문 생성은 미구현이다. 정적판은 기존 브라우저 mock API를 사용한다.
@@ -8,15 +8,20 @@
 - 업무·답변·조건·프로젝트 맥락 변경 및 같은 revision 재평가가 이전 추천·확인·링크를 즉시 지운다. 최신 revision/request_id와 검증된 DTO만 적용하고 확인은 추천 요청·token까지 비교한다. 오류·탭 왕복·대기 중 응답에도 질문/답변/편집 초안을 유지한다. 클라이언트 무효화를 서버 token 폐기로 주장하지 않는다.
 - 전체 `npm test`(대화/DOM·어댑터 124개, Python 13개, 정책 3개, 정적/하위 경로·HTTP 통합 15조합)와 `npm run build`가 통과했다. 브라우저 1440×900, 320/360/390×800, 360×560의 대화·추천·키보드·탭 입력 보존·확인 링크·뉴스→질문·정적 `/toolmeet/`를 확인했다. 실제 휴대폰/소프트 키보드·스크린리더·OS 움직임 감소 설정·실제 AI·새 PR CI·배포는 미검증이다.
 - 사용자 `좋아, #5 PR 초안 승인해. #13 문서 반영 후 최신 main에 맞추고 중복 검사 통과하면 PR 생성해줘.`로 PR 제목·본문 초안과 선행 문서 정리 후 일반 PR 생성을 승인받았다. 확인 시 #13은 OPEN이며 main은 변경되지 않았다. #5의 승인된 제품 코드·검증 결과는 그대로 보존한다. 머지·태그·배포 승인은 없다.
-- 열린 [PR #13](https://github.com/coldgeon/toolmeet/pull/13)과 `docs/CURRENT.md`, `docs/HANDOFF.md` 경로가 겹친다. 다른 채팅의 파일/브랜치는 변경하지 않았으며 #13 문서 반영 뒤 최신 main에 #5 기록을 맞추고 overlap을 다시 확인하는 순서로 조정한다. #6 상세/프리뷰·실제 project_id 판정, backend/shared 원본, 조사 데이터 연결은 별도 범위다.
+- [PR #13](https://github.com/coldgeon/toolmeet/pull/13)이 main `61254d1f866ac9485dd40b574f58bc6940985df8`에 머지된 뒤 해당 main을 기존 #5 브랜치에 병합했다. CURRENT는 자동 병합하고 HANDOFF 상단 충돌은 #5 → #12 → 기존 이력 순서로 두 작업의 기록을 모두 보존했다. 승인된 제품 코드는 그대로이며 PR 생성 전 검증과 overlap을 재확인한다. #6 상세/프리뷰·실제 project_id 판정, backend/shared 원본, 조사 데이터 연결은 별도 범위다.
 
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 공동 작업 절차 #10
+## Discord 인계 절차 #12 · PR 검토 중
+
+- [#12](https://github.com/coldgeon/toolmeet/issues/12)는 Codex의 Discord 인계 채널 조회·종료 보고 규칙을 문서화하는 작업이며 변경은 [PR #13](https://github.com/coldgeon/toolmeet/pull/13)에서 검토한다. `@discord-mcp/cli` 0.31.1은 이 PC에 설치돼 있지만 현재 Codex 세션에는 Discord MCP 도구가 연결돼 있지 않아 채널·스레드 조회와 게시를 검증하지 못했다.
+- 봇 생성·서버 초대·Message Content 접근·로컬 MCP 연결은 서버 소유자의 설정이 필요하다. 연결 전에는 GitHub 이슈·PR과 저장소 문서, 관련 Notion 원본을 기준으로 작업하고, Discord를 완료·승인 근거로 쓰지 않는다. 제품 코드와 배포 상태는 바뀌지 않았다.
+
+## 공동 작업 절차 #10 · main 반영
 - 에이전트 시작 규칙은 루트 `AGENTS.md` 첫 부분에 있고, `CLAUDE.md`와 `.github/copilot-instructions.md`가 같은 원본을 가리킨다. 작업자가 최신 기본 브랜치를 받은 뒤 확인할 수 있다. 임의의 에이전트가 자동으로 읽는다고 보장하지는 않는다.
 
-- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 변경은 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)에서 관리한다.
+- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 변경은 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)로 main에 반영됐다.
 - GitHub `main`은 보호 브랜치가 아니고 활성 ruleset이 없다. CI 형식 검사를 머지 조건으로 강제하고 직접 push를 막으려면 저장소 관리자의 ruleset 설정이 필요하다. 현재 작업 계정에는 관리자 권한이 없다.
 
 ## 두 탐색 탭·집중 입력 #4 · main 반영
