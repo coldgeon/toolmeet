@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {JSDOM} from "jsdom";
+import {installLegacyAdapter} from "./legacy-adapter.mjs";
 
 const frontend = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(frontend, "src", "index.html"), "utf8");
@@ -69,6 +70,7 @@ async function harness(t, {url = "https://toolmeet.test/", reducedMotion = false
     assert(script, `HTML must load ${name}`);
     // Match document.currentScript during execution, using the actual HTML script element.
     Object.defineProperty(document, "currentScript", {configurable: true, value: script});
+    if (name === "brief.js") installLegacyAdapter(window, frontend, feed);
     window.eval(fs.readFileSync(path.join(frontend, "src", name), "utf8"));
     delete document.currentScript;
   }
@@ -100,6 +102,7 @@ async function harness(t, {url = "https://toolmeet.test/", reducedMotion = false
     async answer(request, token = "current-result") {
       const candidate = feed.candidates.find((item) => item.id === "chatgpt");
       await request.respond({
+        data_mode: "mock", data_note: "HTTP regression fixture",
         profile: request.body,
         topic_label: "회의·후속 작업", classification_note: "단어 규칙 mock",
         related_news: [], brief_token: token, data_updated_at: feed.updated_at, stage: token,
@@ -135,7 +138,7 @@ function assertNewQuestion(app) {
   assertTab(app, "ask");
   assert.equal(app.document.body.dataset.mode, "initial");
   assert.equal(app.byId("work").value, "");
-  for (const id of Object.keys(environment)) assert.equal(app.byId(id).value, "unknown");
+  for (const id of Object.keys(environment)) assert.equal(app.byId(id).value, "");
   assert.equal(app.byId("results").hidden, true);
   assert.equal(app.byId("candidate-list").children.length, 0);
   assert.equal(app.links().length, 0);

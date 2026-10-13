@@ -1,5 +1,20 @@
 # 툴밋 인계
 
+## 2026-10-13 #5 조건 확인 대화 · 구현·검증 완료
+
+- 사용자 인계 메시지가 기존 #5의 구현 재개를 명시해 이슈/브랜치/작업 폴더를 새로 만들지 않았다. 기존 `C:/Users/cksrj/.codex/worktrees/issue-5-question-conversation/u-solve`, `feat/5-question-conversation`에서 clean HEAD와 최신 origin/main `f387ab0180142be4d5c2caa50e878741488ecedc`, 열린 이슈 #5/문서 PR #13을 확인하고 시작했다. 공유 원래 폴더의 PM 미커밋 초안과 제품 파일은 복사하거나 수정하지 않았다.
+- `frontend/src/conversation.js`에 exploration.v1 snapshot·fact·question·추천·confirm 검증과 교체 가능한 mock evaluate/confirm 어댑터를 추가했다. 기존 후보 ID와 판정 API를 재사용한다. 알려진 명시 예시 구절만 facts로 읽고 부정/모호한 구절은 조건으로 추정하지 않으며 명시 답변을 우선하고 충돌 확인 이유를 표시한다. 원하는 결과가 빠지면 자유 답변 하나를 묻고 후보의 미확인 필수조건만 선택한다. 충분한 정보는 즉시 추천, 모름/내부 자료 등 다른 질문으로 풀 수 없는 보류는 조건 확인 필요로 마무리한다.
+- `brief.js`, `index.html`, `brief.css`에 실제 단계, 한 질문, 미답변/known/unknown, 답변 수정·삭제·초안, 오류/재시도·empty/hold·내부 준비 방법을 추가했다. 기존 뉴스·후보 이유·조건·활용 방법·방향 확인 후 링크를 재사용했다. 탭은 DOM/대화/revision을 보존한다. 새 질문만 전체 초기화하며 모션 선호는 기존 탐색 UI에 남는다.
+- 모든 의미 변경은 revision 증가와 이전 결과/추천 token/확인/링크 즉시 제거를 먼저 수행한다. 같은 revision 재평가도 새 turn ID로 confirm을 무효화한다. turn과 confirm의 최신 revision/request_id/추천 요청/token 비교 뒤 payload 검증을 통과한 응답만 표시하고 오래된 성공/오류/finally를 무시한다. 화면 token 제거는 backend 메모리 token 폐기가 아니며 새 서버 기능을 구현하지 않았다.
+- 개발/정적 빌드에 같은 원본 conversation.js를 연결했다. backend/shared 원본과 프레임워크·배포 설정은 변경하지 않았다. outcome은 기존 brief의 업무 입력에 설명을 덧붙이는 호환 방식이며 실제 자유문장 이해가 아니다. cost/project_id는 snapshot·검증·편집 계약을 보존하지만 기존 API에 실제 비용·프로젝트별 판단을 추가하지 않았다.
+- 검증: 최종 `npm test` 성공. frontend 총 124개(기존 #1/#4 HTTP 경합·탐색 44개, 실제 mock/계약 31개, 대화 DOM 49개), Python 13개, workflow 정책 3개, 정적 빌드·하위 경로·뉴스/후보·확인 관문, HTTP 5개 화면/자산·15개 Python/정적 판정 비교 통과. `npm run build`, JS 구문/공백 검사 통과. 실제 Codex·유료 API는 호출하지 않았다. 기존 경합 fixtures는 질문 선택만 제어하며 production normalize/validate/confirm을 사용하고 실제 질문 흐름은 별도 actual adapter/DOM 시험으로 검증했다.
+- 브라우저 확인: 실제 local 개발 API에서 선택 질문→조기 추천→활용 방법→방향 확인 링크, 정책을 모름으로 수정해 링크 제거/보류, 자유 답변과 탭 왕복 초안 보존을 조작했다. 1440×900, 320/360/390×800 및 360×560에서 대화/추천 가로 넘침 없음·키보드 제출/답변/확인·초점 이동을 확인했다. 정적 `/toolmeet/` 직접 진입·저장 합성 이미지·뉴스 상세→질문 자동 채움/대화·추천/확인, 콘솔 오류 없음도 확인했다. `/explore`, `/demo`는 HTTP/자산 통합 검증으로 보존을 확인했으며 실제 도구 실행은 하지 않았다.
+- 독립 코드 검토가 찾은 업무 근거 이력 누락, 부정 결과 오해, 내부 자료 불필요 질문, 대기 중 편집 초안 소실을 수정하고 회귀에 반영했다. 내부 에이전트 검토는 사람의 승인이나 고객 인터뷰를 대신하지 않는다.
+- 기존 Seed `seed_49cafe36102b`를 이어받고 현재 검토/화면 증거는 저장소 밖 `C:/Users/cksrj/.codex/visualizations/2026/10/13/01a13389-558a-7ad2-b5c4-9230913c6d2f/`에 보관한다. 현 세션에 Ouroboros MCP/CLI가 없어 Seed 기록만 유지하고 다른 반복 실행기는 추가하지 않았다.
+- 미검증: 실제 휴대폰/소프트 키보드·스크린리더·OS 움직임 감소 설정 변경(기존 DOM matchMedia/CSS 회귀는 통과), 실제 AI/기사 수집/회사 정책/도구 실행/요금, 새 PR 원격 Windows/Linux CI·공개 배포. #6의 프로젝트 상세/프리뷰·실제 project_id 추천, 새로고침/로그인 저장 복원도 범위 밖이다.
+- 다음: 채팅의 PR 제목·본문 전체 초안에 대한 사용자 승인. PR #13과 CURRENT/HANDOFF가 겹치므로 #13 문서 반영 뒤 최신 main에서 #5 기록을 조정하고 `npm run task:overlap`을 다시 통과시킨 뒤 승인된 PR을 생성한다. PR 생성·머지·태그·배포는 각각 별도 승인이다. 다른 채팅이나 외부 서비스에 메시지를 보내지 않았다.
+
+
 ## 2026-10-13 이슈 #10 공동 작업 절차 · PR #11
 
 - 작업 시작 규칙을 루트 `AGENTS.md`의 맨 위 "작업 시작 전 필수 확인"으로 옮기고, `CLAUDE.md`와 `.github/copilot-instructions.md`에서 같은 원본을 가리키도록 했다. 도구가 해당 파일을 읽는지와 최신 기본 브랜치를 받았는지에 따라 실제 적용이 달라진다는 한계를 `docs/COLLABORATION.md`에 명시했다.

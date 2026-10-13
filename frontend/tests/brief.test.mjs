@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {JSDOM} from "jsdom";
+import {installLegacyAdapter} from "./legacy-adapter.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "src", "index.html"), "utf8");
@@ -34,6 +35,8 @@ async function harness(t, url = "https://toolmeet.test/") {
   const requests = [];
   window.fetch = (input, options = {}) => {
     const pathname = new URL(input, window.location.href).pathname;
+    if (pathname.endsWith("/brief_mock.json")) return Promise.resolve(new Response(JSON.stringify(source)));
+    if (pathname.endsWith("/media/catalog/provenance.json")) return Promise.resolve(new Response(JSON.stringify({contract_version:"exploration.v1",media:[]})));
     if (pathname === "/api/board") {
       return Promise.resolve(new Response(JSON.stringify({data_mode: "mock", posts: source.board_posts})));
     }
@@ -56,6 +59,7 @@ async function harness(t, url = "https://toolmeet.test/") {
     });
     return pending;
   };
+  installLegacyAdapter(window, root, source, {loadCatalog:true});
   window.eval(briefScript);
   await flush();
 
@@ -89,6 +93,7 @@ async function harness(t, url = "https://toolmeet.test/") {
       assert(catalogItem, `Missing catalog fixture ${candidate}`);
       // Responses model the API contract; test-selected statuses do not recalculate policy rules.
       await request.respond({
+        data_mode: "mock", data_note: "HTTP regression fixture",
         profile: request.body,
         topic_label: "회의·후속 작업",
         classification_note: "저장된 단어 규칙으로 임시 분류 · AI 문장 이해 아님",
@@ -96,7 +101,7 @@ async function harness(t, url = "https://toolmeet.test/") {
         brief_token: token,
         data_updated_at: source.updated_at,
         stage: token,
-        candidates: [{
+        candidates: [...(status === "excluded" ? [{...source.candidates.find((c) => c.id === (candidate === "chatgpt" ? "notebooklm" : "chatgpt")), status:"possible", reasons:["fixture"], fit_reason:"fixture", first_gate:"fixture", first_check:"fixture", source_url:undefined}] : []), {
           id: catalogItem.id, name: catalogItem.name, kind: catalogItem.kind,
           summary: catalogItem.summary, method: catalogItem.method,
           source_status: catalogItem.source_status, first_check: catalogItem.first_check,
@@ -175,7 +180,7 @@ for (const field of changedFields) {
     await app.answer(original, {token: "stale-environment"});
     assertAnswer(app, "latest-environment", field.status, field.candidate);
     assert.equal(app.links().length, 0);
-    if (["excluded", "hold"].includes(field.status)) assert.equal(app.document.querySelector(".confirm-button"), null);
+    if (["excluded", "hold"].includes(field.status)) assert.equal(app.document.querySelector(`#candidate-${field.candidate} .confirm-button`), null);
     assert.equal(app.document.getElementById("submit").disabled, false);
   });
 }
@@ -194,7 +199,7 @@ test("policy allowed to unknown while loading keeps confirmation on hold", async
   assert.equal(app.document.getElementById("submit").disabled, true);
   await app.answer(latest, {token: "latest-unknown", status: "hold"});
   assertAnswer(app, "latest-unknown", "hold");
-  assert.equal(app.document.querySelector(".confirm-button"), null);
+  assert.equal(app.document.querySelector("#candidate-chatgpt .confirm-button"), null);
 });
 
 test("multiple environment changes tolerate success and failure in reverse order", async (t) => {
@@ -270,7 +275,7 @@ for (const outcome of ["success", "failure"]) {
     else await confirmation.respond({error: "old confirmation failed"}, 400);
     assertAnswer(app, "new-denied", "excluded");
     assert.equal(app.links().length, 0);
-    assert.equal(app.document.querySelector(".confirm-button"), null);
+    assert.equal(app.document.querySelector("#candidate-chatgpt .confirm-button"), null);
     assert.doesNotMatch(app.results().textContent, /old confirmation failed/);
   });
 }
@@ -333,7 +338,7 @@ test("latest allowed result preserves preview, mock notice and confirmed source-
   assert.equal(link.href, "https://chatgpt.com/");
   assert.equal(link.target, "_blank");
   assert.equal(link.rel, "noopener noreferrer");
-  assert.equal(app.document.querySelector(".confirm-button"), null);
+  assert.equal(app.document.querySelector("#candidate-chatgpt .confirm-button"), null);
   assert.match(app.results().textContent, /첫 시험 완료가 아닙니다/);
 });
 
