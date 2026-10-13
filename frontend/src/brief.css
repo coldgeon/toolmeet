@@ -173,3 +173,37 @@ button:focus-visible,a:focus-visible,select:focus-visible,summary:focus-visible{
 .exploration-page .catalog-visual {position:relative;}
 .exploration-page .catalog-visual > .catalog-media-label {position:absolute;bottom:8px;left:8px;max-width:calc(100% - 16px);padding:4px 8px;border:1px solid #d8e3ed;border-radius:6px;background:#fff;color:#34465a;font-size:11px;line-height:1.5;}
 .exploration-page .media-fallback .catalog-media-label {display:block;margin-top:8px;color:#34465a;font-size:11px;}
+
+/* Actual adapter phase and one active follow-up question. */
+.conversation{border:1px solid #d9e4f4;border-radius:16px;padding:24px;margin:20px 0;background:#fff;scroll-margin-top:18px}
+.conversation-phases{list-style:none;display:flex;gap:10px;padding:0;margin:0 0 18px;flex-wrap:wrap}
+.conversation-phases li{font-size:13px;padding:8px 14px;background:#f2f5fa;color:#526783;border-radius:8px}
+.conversation-phases [aria-current="step"]{background:#e7efff;color:#285dc0;font-weight:800;border:1px solid #b5cbee}
+.conversation-hint{font-size:12px;color:#536882;line-height:1.8;margin:12px 0}
+.conversation-question h3,.answer-editor h3{font-size:21px;line-height:1.5;letter-spacing:-.035em;margin:22px 0 16px;color:#283c59;overflow-wrap:anywhere}
+.conversation-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.conversation button{min-height:44px;max-width:100%;border-radius:9px;padding:11px 15px;font-size:13px;line-height:1.5;white-space:normal}
+.answer-option,.answer-secondary{border:1px solid #c5d5ed;background:#fff;color:#365f9b}
+.answer-option:hover,.answer-secondary:hover{background:#edf3ff}
+.answer-primary{border:1px solid #3068cb;background:#3068cb;color:#fff}
+.answer-form{display:flex;flex-direction:column;gap:10px;margin:12px 0;align-items:stretch}
+.answer-form label{font-size:13px;color:#465e80;font-weight:650}
+.answer-form textarea,.answer-form select{width:100%;min-width:0;border:1px solid #b6c9e5;border-radius:9px;padding:12px;font:inherit;font-size:15px;line-height:1.6;box-sizing:border-box;background:#fff;color:#263b59}
+.answer-form textarea{resize:vertical;min-height:90px}
+.answer-form textarea:focus-visible,.answer-form select:focus-visible{outline:3px solid #477cca;outline-offset:2px}
+.answer-form>.answer-primary{align-self:flex-start}
+.unknown-answer{margin-top:12px}
+.answers-details{border-top:1px solid #e4ebf6;margin-top:20px;padding-top:15px}
+.answers-details summary{cursor:pointer;font-size:13px;color:#3e6090;min-height:44px;padding:10px 0}
+#conversation-answers{list-style:none;padding:0;margin:0}
+.answer-row{display:flex;align-items:start;justify-content:space-between;gap:16px;border-top:1px solid #edf1f6;padding:12px 0}
+.answer-row>div{min-width:0;overflow-wrap:anywhere}
+.answer-row strong{font-size:13px;color:#304d73}
+.answer-row p{font-size:13px;line-height:1.7;margin:6px 0 0;color:#4c607e;white-space:pre-wrap}
+.answer-row small{font-size:11px;line-height:1.6;color:#586f8c}
+.answer-row .inline-action{flex-shrink:0}
+.supporting-method{padding:19px;background:#f3f6fb;border:1px solid #dfe6f1;border-radius:12px;margin-top:18px;color:#4b6384;font-size:13px;line-height:1.8}
+.supporting-method h4{margin:0;font-size:15px;color:#304d73}
+.empty-result{padding:20px;border:1px dashed #bbcce4;border-radius:12px;color:#4c6180;line-height:1.8}
+.confirm-feedback{font-size:13px;line-height:1.8;overflow-wrap:anywhere;margin-top:12px}
+@media(max-width:620px){.conversation{padding:18px 15px;margin-top:14px}.conversation-phases{gap:6px}.conversation-phases li{font-size:12px;padding:8px 10px}.conversation-question h3,.answer-editor h3{font-size:19px}.answer-form textarea,.answer-form select{font-size:16px}.conversation-actions{gap:8px}.conversation-actions button{flex:1 1 auto}.answer-row{gap:8px}.answer-post,.candidate{overflow-wrap:anywhere}}

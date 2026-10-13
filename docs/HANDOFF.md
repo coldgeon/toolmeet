@@ -1,5 +1,28 @@
 # 툴밋 인계
 
+## 2026-10-13 #5 조건 확인 대화 · PR #14 등록
+
+- PR 등록 결과: #13 반영·문서 충돌 조정·최신 main 기준 전체 검증·task:overlap(14개 변경 경로, 다른 열린 PR과 겹침 없음)·PR 형식 검사를 완료한 뒤 승인된 #5 브랜치만 정상 push했다. [일반 PR #14](https://github.com/coldgeon/toolmeet/pull/14)를 main 대상으로 생성해 Closes #5 하나에 연결하고 이 채팅의 PR artifact로 등록했다. 생성 시 head는 `b712ad463a8c23c33c5aad1b9b0994f0ba157b2f`였으며 workflow-policy SUCCESS와 Windows/Ubuntu 검사 실행 중 상태를 확인했다. 이 PR 등록 기록을 후속 문서 커밋으로 남기며 제품 코드에는 변경이 없다. 자동 후속 확인 `13-5-pr`은 목적 달성으로 PAUSED로 중지했다. PR 머지·태그·배포는 실행하지 않았다.
+
+- PR 생성 후속 실행: #13이 `61254d1f866ac9485dd40b574f58bc6940985df8`로 main에 머지된 것을 원본 GitHub와 fetch/ancestor 검사로 확인했다. 승인된 기존 브랜치에 최신 main을 병합했고 HANDOFF 상단 충돌은 #5와 #12 기록을 모두 보존했다. AGENTS/COLLABORATION의 #13 절차는 main 원본대로 유지했다. 이번 세션에는 호출 가능한 Discord 도구가 없어 채널/스레드 조회를 완료하지 않았으며 사용자 외부 메시지 금지에 따라 게시하지 않는다. GitHub 이슈·PR·저장소 원본으로 진행한다. 승인된 제품 코드와 #13 협업 규칙 보존은 독립 읽기 비교로 확인했다. npm ci 복원 성공 뒤 최신 main 기준 전체 npm test(프론트 124, Python 13, 정책 3, 정적·15조합 HTTP 통합)·npm run build·git diff --check와 task:overlap이 모두 통과했다(변경 경로 14개, 다른 열린 PR과 겹침 없음). 승인된 제목·본문에서 기준 main·충돌 해결·검증 사실만 갱신해 일반 PR을 생성한다.
+
+- 사용자 인계 메시지가 기존 #5의 구현 재개를 명시해 이슈/브랜치/작업 폴더를 새로 만들지 않았다. 기존 `C:/Users/cksrj/.codex/worktrees/issue-5-question-conversation/u-solve`, `feat/5-question-conversation`에서 clean HEAD와 최신 origin/main `f387ab0180142be4d5c2caa50e878741488ecedc`, 열린 이슈 #5/문서 PR #13을 확인하고 시작했다. 공유 원래 폴더의 PM 미커밋 초안과 제품 파일은 복사하거나 수정하지 않았다.
+- `frontend/src/conversation.js`에 exploration.v1 snapshot·fact·question·추천·confirm 검증과 교체 가능한 mock evaluate/confirm 어댑터를 추가했다. 기존 후보 ID와 판정 API를 재사용한다. 알려진 명시 예시 구절만 facts로 읽고 부정/모호한 구절은 조건으로 추정하지 않으며 명시 답변을 우선하고 충돌 확인 이유를 표시한다. 원하는 결과가 빠지면 자유 답변 하나를 묻고 후보의 미확인 필수조건만 선택한다. 충분한 정보는 즉시 추천, 모름/내부 자료 등 다른 질문으로 풀 수 없는 보류는 조건 확인 필요로 마무리한다.
+- `brief.js`, `index.html`, `brief.css`에 실제 단계, 한 질문, 미답변/known/unknown, 답변 수정·삭제·초안, 오류/재시도·empty/hold·내부 준비 방법을 추가했다. 기존 뉴스·후보 이유·조건·활용 방법·방향 확인 후 링크를 재사용했다. 탭은 DOM/대화/revision을 보존한다. 새 질문만 전체 초기화하며 모션 선호는 기존 탐색 UI에 남는다.
+- 모든 의미 변경은 revision 증가와 이전 결과/추천 token/확인/링크 즉시 제거를 먼저 수행한다. 같은 revision 재평가도 새 turn ID로 confirm을 무효화한다. turn과 confirm의 최신 revision/request_id/추천 요청/token 비교 뒤 payload 검증을 통과한 응답만 표시하고 오래된 성공/오류/finally를 무시한다. 화면 token 제거는 backend 메모리 token 폐기가 아니며 새 서버 기능을 구현하지 않았다.
+- 개발/정적 빌드에 같은 원본 conversation.js를 연결했다. backend/shared 원본과 프레임워크·배포 설정은 변경하지 않았다. outcome은 기존 brief의 업무 입력에 설명을 덧붙이는 호환 방식이며 실제 자유문장 이해가 아니다. cost/project_id는 snapshot·검증·편집 계약을 보존하지만 기존 API에 실제 비용·프로젝트별 판단을 추가하지 않았다.
+- 검증: 최종 `npm test` 성공. frontend 총 124개(기존 #1/#4 HTTP 경합·탐색 44개, 실제 mock/계약 31개, 대화 DOM 49개), Python 13개, workflow 정책 3개, 정적 빌드·하위 경로·뉴스/후보·확인 관문, HTTP 5개 화면/자산·15개 Python/정적 판정 비교 통과. `npm run build`, JS 구문/공백 검사 통과. 실제 Codex·유료 API는 호출하지 않았다. 기존 경합 fixtures는 질문 선택만 제어하며 production normalize/validate/confirm을 사용하고 실제 질문 흐름은 별도 actual adapter/DOM 시험으로 검증했다.
+- 브라우저 확인: 실제 local 개발 API에서 선택 질문→조기 추천→활용 방법→방향 확인 링크, 정책을 모름으로 수정해 링크 제거/보류, 자유 답변과 탭 왕복 초안 보존을 조작했다. 1440×900, 320/360/390×800 및 360×560에서 대화/추천 가로 넘침 없음·키보드 제출/답변/확인·초점 이동을 확인했다. 정적 `/toolmeet/` 직접 진입·저장 합성 이미지·뉴스 상세→질문 자동 채움/대화·추천/확인, 콘솔 오류 없음도 확인했다. `/explore`, `/demo`는 HTTP/자산 통합 검증으로 보존을 확인했으며 실제 도구 실행은 하지 않았다.
+- 독립 코드 검토가 찾은 업무 근거 이력 누락, 부정 결과 오해, 내부 자료 불필요 질문, 대기 중 편집 초안 소실을 수정하고 회귀에 반영했다. 내부 에이전트 검토는 사람의 승인이나 고객 인터뷰를 대신하지 않는다.
+- 기존 Seed `seed_49cafe36102b`를 이어받고 현재 검토/화면 증거는 저장소 밖 `C:/Users/cksrj/.codex/visualizations/2026/10/13/01a13389-558a-7ad2-b5c4-9230913c6d2f/`에 보관한다. 현 세션에 Ouroboros MCP/CLI가 없어 Seed 기록만 유지하고 다른 반복 실행기는 추가하지 않았다.
+- 미검증: 실제 휴대폰/소프트 키보드·스크린리더·OS 움직임 감소 설정 변경(기존 DOM matchMedia/CSS 회귀는 통과), 실제 AI/기사 수집/회사 정책/도구 실행/요금, 공개 배포. 원격 Windows/Linux CI는 PR #14의 최신 head 검사로 별도 확인한다. #6의 프로젝트 상세/프리뷰·실제 project_id 추천, 새로고침/로그인 저장 복원도 범위 밖이다.
+- 첫 후속 확인의 복구: #13은 OPEN이고 #5 PR은 없었다. 기존 #5 checkout 폴더가 사라졌으나 같은 이슈 브랜치와 `7d96b5b3a8b3abd86be4e24b6ce6b9339c85006a` 이하 구현/승인 기록 커밋이 Git에 보존돼 있었다. 사라진 원인은 확정하지 않았다. 기존 브랜치를 같은 원래 경로에 다시 checkout해 작업 폴더를 복구했고 공유 main checkout·미커밋 파일은 변경하지 않았다. 복구 HEAD의 frontend/backend/shared 파일이 승인된 구현 `ae3ad74`와 같은 것과 clean 상태를 확인했다. 제품 변경이 없어 기능 시험을 반복하지 않았으며 #13 반영 후에는 npm ci와 필요한 전체 검증을 실행한다. 앱 attach_worktree는 이 ownerless worktree가 해당 채팅 소유인지 확인할 수 없어 등록하지 못했지만 Git 작업 폴더 복구는 성공했다.
+- 후속 확인: 향후 push/PR 생성까지 재개하는 지속적 자동화 설정은 최초 자동 승인 검토에서 명시 승인 부족으로 거절됐다. 사용자에게 정확한 범위를 설명하고 `자동 후속 확인 허용` 응답을 받은 뒤 이 채팅의 15분 간격 heartbeat `13-5-pr`을 ACTIVE로 생성했다. #13이 unchanged/OPEN이면 조용히 대기하고 반영 뒤 승인된 #5 PR 생성까지 재개한다. PR 생성 또는 필수 사용자 조치가 있을 때 알리며 완료 뒤 후속 확인을 중지한다. #5/#13 머지와 배포는 승인 범위가 아니다.
+- 승인 갱신: 사용자 `좋아, #5 PR 초안 승인해. #13 문서 반영 후 최신 main에 맞추고 중복 검사 통과하면 PR 생성해줘.`로 승인된 제목·본문의 일반 PR 생성을 지시했다. #13은 아직 OPEN이고 원격 main은 `f387ab0180142be4d5c2caa50e878741488ecedc`다. 로컬 제품 구현 커밋 `ae3ad74182a41814f035b517342414304b122482`는 변경하지 않았다.
+- 다음: PR #14 최신 head의 Windows/Ubuntu·workflow-policy 결과와 리뷰를 확인하고, 사람이 해당 PR과 head를 대상으로 별도 머지 승인하면 승인된 SHA를 지정해 Squash merge한다. 승인된 제품 코드나 해결 범위가 바뀌면 새 승인을 확인한다. 머지·태그·배포는 이번 PR 생성 승인이 아니며 다른 채팅/외부 서비스에 메시지를 보내지 않는다.
+
+
+
 ## 2026-10-13 이슈 #12 Discord 인계 조회·보고 규칙 · PR #13
 
 - [#12](https://github.com/coldgeon/toolmeet/issues/12)의 승인 범위는 문서 구현과 검토용 PR 생성까지다. 최신 `origin/main` `f387ab0`의 별도 worktree `C:/Users/s2608/orca/workspaces/toolmeet/toolmeet-issue-12-discord-handoff`, 브랜치 `chore/12-discord-handoff`에서 작업한다. 다른 작업 트리의 미커밋 `package-lock.json`은 옮기거나 수정하지 않았다. 시작 시 열린 PR은 0건이었다.
