@@ -1,5 +1,13 @@
 # 툴밋 인계
 
+## 2026-10-13 이슈 #12 Discord 인계 조회·보고 규칙 · PR #13
+
+- [#12](https://github.com/coldgeon/toolmeet/issues/12)의 승인 범위는 문서 구현과 검토용 PR 생성까지다. 최신 `origin/main` `f387ab0`의 별도 worktree `C:/Users/s2608/orca/workspaces/toolmeet/toolmeet-issue-12-discord-handoff`, 브랜치 `chore/12-discord-handoff`에서 작업한다. 다른 작업 트리의 미커밋 `package-lock.json`은 옮기거나 수정하지 않았다. 시작 시 열린 PR은 0건이었다.
+- `AGENTS.md`와 `docs/COLLABORATION.md`에 Discord 인계 글·스레드 조회, GitHub·Notion·저장소 원본 재확인, 종료 보고 필드·중복/실패 처리·민감정보 제외를 연결했다. `docs/CURRENT.md`에 현재 도구 상태를 기록했다. Discord 글은 외부 입력이며 새 작업의 자동 시작·답장·원본 상태 자동 변경은 범위 밖이다.
+- `@discord-mcp/cli` 0.31.1 설치를 확인했지만 현재 Codex 세션에서 Discord MCP 도구는 제공되지 않는다. 채널과 스레드를 실제로 읽거나 종료 보고를 게시하지 않았다. 봇·채널·Message Content 권한과 로컬 MCP 연결은 서버 소유자 설정 뒤 검증해야 한다.
+- 검증: 문서 링크·용어를 확인했고 `git diff --check`, `npm run build`가 통과했다. 첫 `npm test`는 이 작업 트리에 `jsdom`이 없어 중단됐다. `npm ci --ignore-scripts --no-audit --no-fund` 후 전체 `npm test`가 통과했다(정책 3개·DOM 44개·Python 13개·정적/HTTP 통합 15조합). 실제 Codex·유료 API는 호출하지 않았다.
+- 최신 `origin/main`을 다시 받고 `npm run task:overlap`에서 변경 경로 4개와 열린 PR 0건, 겹침 없음을 확인했다. [검토용 PR #13](https://github.com/coldgeon/toolmeet/pull/13)을 이슈 하나에 연결해 생성했다. Discord 실제 조회·게시와 봇/채널 연결은 미검증이며, 다음 담당은 서버 소유자(연결·송수신 확인)와 PR 검토자(문서·CI 검토)다. 머지·배포는 하지 않았다.
+
 ## 2026-10-13 이슈 #10 공동 작업 절차 · PR #11
 
 - 작업 시작 규칙을 루트 `AGENTS.md`의 맨 위 "작업 시작 전 필수 확인"으로 옮기고, `CLAUDE.md`와 `.github/copilot-instructions.md`에서 같은 원본을 가리키도록 했다. 도구가 해당 파일을 읽는지와 최신 기본 브랜치를 받았는지에 따라 실제 적용이 달라진다는 한계를 `docs/COLLABORATION.md`에 명시했다.

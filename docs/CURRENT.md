@@ -2,10 +2,15 @@
 
 기준: 2026-10-13, Asia/Seoul.
 
-## 공동 작업 절차 #10
+## Discord 인계 절차 #12 · PR 검토 중
+
+- [#12](https://github.com/coldgeon/toolmeet/issues/12)는 Codex의 Discord 인계 채널 조회·종료 보고 규칙을 문서화하는 작업이며 변경은 [PR #13](https://github.com/coldgeon/toolmeet/pull/13)에서 검토한다. `@discord-mcp/cli` 0.31.1은 이 PC에 설치돼 있지만 현재 Codex 세션에는 Discord MCP 도구가 연결돼 있지 않아 채널·스레드 조회와 게시를 검증하지 못했다.
+- 봇 생성·서버 초대·Message Content 접근·로컬 MCP 연결은 서버 소유자의 설정이 필요하다. 연결 전에는 GitHub 이슈·PR과 저장소 문서, 관련 Notion 원본을 기준으로 작업하고, Discord를 완료·승인 근거로 쓰지 않는다. 제품 코드와 배포 상태는 바뀌지 않았다.
+
+## 공동 작업 절차 #10 · main 반영
 - 에이전트 시작 규칙은 루트 `AGENTS.md` 첫 부분에 있고, `CLAUDE.md`와 `.github/copilot-instructions.md`가 같은 원본을 가리킨다. 작업자가 최신 기본 브랜치를 받은 뒤 확인할 수 있다. 임의의 에이전트가 자동으로 읽는다고 보장하지는 않는다.
 
-- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 변경은 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)에서 관리한다.
+- [#10](https://github.com/coldgeon/toolmeet/issues/10)에 이슈·PR 템플릿, 이슈별 worktree 시작 명령, PR 형식 검사와 충돌 확인 절차를 연결했다. 변경은 [PR #11](https://github.com/coldgeon/toolmeet/pull/11)로 main에 반영됐다.
 - GitHub `main`은 보호 브랜치가 아니고 활성 ruleset이 없다. CI 형식 검사를 머지 조건으로 강제하고 직접 push를 막으려면 저장소 관리자의 ruleset 설정이 필요하다. 현재 작업 계정에는 관리자 권한이 없다.
 
 ## 두 탐색 탭·집중 입력 #4 · main 반영
