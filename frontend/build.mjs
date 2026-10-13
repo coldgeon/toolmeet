@@ -25,7 +25,7 @@ let home = fs.readFileSync(path.join(source, "index.html"), "utf8");
 home = removeLocalOnlyLinks(home);
 home = replaceRequired(home, 'href="/brief.css"', 'href="brief.css"');
 home = replaceRequired(home, 'src="/brief.js"', 'src="brief.js"');
-home = home.replaceAll('src="/catalog.js"', 'src="catalog.js"').replaceAll('src="/exploration.js"', 'src="exploration.js"').replaceAll('src="/conversation.js"', 'src="conversation.js"');
+home = home.replaceAll('src="/projects.js"', 'src="projects.js"').replaceAll('src="/catalog.js"', 'src="catalog.js"').replaceAll('src="/exploration.js"', 'src="exploration.js"').replaceAll('src="/conversation.js"', 'src="conversation.js"');
 home = home.replaceAll('href="/news"', 'href="news/"').replaceAll('href="/"', 'href="./"');
 home = home.replace('LOCAL MOCK DEMO', 'MOCK DEMO').replace('로컬 프로토타입', '배포용 mock 프로토타입');
 home = home.replace('<script src="brief.js" defer></script>', '<script src="mock_api.js"></script>\n  <script src="brief.js" defer></script>');
@@ -44,7 +44,7 @@ newsJs = replaceRequired(newsJs, 'link.href = "/?work="', 'link.href = "../?work
 newsJs = newsJs.replaceAll('"/news?id="', '"./?id="').replaceAll('"/news"', '"./"');
 fs.writeFileSync(path.join(dist, "news.js"), newsJs);
 
-for (const filename of ["brief.css", "brief.js", "mock_api.js", "catalog.js", "exploration.js", "conversation.js"]) {
+for (const filename of ["brief.css", "brief.js", "mock_api.js", "catalog.js", "projects.js", "exploration.js", "conversation.js"]) {
   fs.copyFileSync(path.join(source, filename), path.join(dist, filename));
 }
 const mediaExtensions = new Set([".svg", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".json"]);

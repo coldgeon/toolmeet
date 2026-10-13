@@ -34,6 +34,7 @@
           <p class="eyebrow">YOUR WORK, YOUR WAY</p>
           <h1>하던 일에,<br><em>새로운 방법을.</em></h1>
           <p class="hero-copy">업무와 원하는 결과를 적어보세요.<br>사용 조건에 맞는 예시 후보와 활용 방법을 살펴봅니다.</p>
+          <aside id="selected-project-context" class="selected-project-context" hidden aria-label="선택한 프로젝트 맥락"><div><span>질문에 참고할 프로젝트</span><strong id="selected-project-name"></strong><p>선택한 프로젝트를 질문 맥락으로 유지합니다. 현재 mock 추천은 프로젝트별 판단을 하지 않습니다.</p></div><button type="button" id="clear-project-context">선택 해제</button></aside>
           <form id="brief-form" class="input-card">
             <label class="input-label" for="work">어떤 업무를 해결하고 싶나요?</label>
             <div class="work-row">
@@ -121,7 +122,9 @@
     </section>
     <footer class="home-footer"><span>툴밋 · 로컬 프로토타입</span><a href="/news">AI 뉴스 살펴보기 ↗</a></footer>
   </main>
+  <dialog id="project-detail" class="project-detail" aria-labelledby="project-detail-title"><div class="project-detail-heading"><div><p class="eyebrow">PROJECT PREVIEW · MOCK</p><h2 id="project-detail-title">프로젝트 살펴보기</h2></div><button type="button" id="project-detail-close" aria-label="프로젝트 상세 닫기">닫기 ✕</button></div><div id="project-detail-content" aria-live="polite"></div><div class="project-detail-actions"><button type="button" id="project-detail-retry" hidden>상세 다시 불러오기</button><button type="button" id="project-detail-ask" hidden>이 프로젝트를 참고해 질문하기</button><p>기존 업무 입력과 사용 조건은 유지됩니다. 선택은 실제 추천 판단이나 사용 승인이 아닙니다.</p></div></dialog>
   <script src="/catalog.js" defer></script>
+  <script src="/projects.js" defer></script>
   <script src="/exploration.js" defer></script>
   <script src="/conversation.js" defer></script>
   <script src="/brief.js" defer></script>
