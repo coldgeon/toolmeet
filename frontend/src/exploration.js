@@ -42,6 +42,7 @@
   function selectTab(tab) {
     if (tab !== "ask" && tab !== "projects") return;
     state.tab = tab;
+    document.dispatchEvent(new CustomEvent("toolmeet:tab-change", {detail: {tab}}));
     sync();
   }
 
@@ -53,7 +54,7 @@
   for (const tab of tabs) {
     tab.addEventListener("click", () => selectTab(tab.id === "ask-tab" ? "ask" : "projects"));
     tab.addEventListener("keydown", (event) => {
-      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
       const next = event.key === "Home" ? tabs[0] : event.key === "End" ? tabs[1] : tabs[1 - tabs.indexOf(tab)];
       selectTab(next.id === "ask-tab" ? "ask" : "projects");
@@ -67,6 +68,7 @@
     if ($("environment-details").open) focusQuestion();
   });
   document.addEventListener("toolmeet:focus-question", focusQuestion);
+  document.addEventListener("toolmeet:project-context", (event) => {state.projectId = event.detail?.project_id ?? null;});
   $("motion-toggle").addEventListener("click", () => {
     if (state.reducedMotion || !catalogReady) return;
     state.motionPaused = !state.motionPaused;
@@ -123,6 +125,7 @@
     else if (project.requirements.external_ai.value) values.push("외부 AI 정책 확인");
     if (project.requirements.installation.state === "unknown") values.push("설치 조건 미확인");
     else if (project.requirements.installation.value) values.push("설치 허용 필요");
+    if (project.requirements.hosting.state === "unknown") values.push("실행 위치 미확인");
     if (project.requirements.hosting.value === "self_hosted") values.push("자체 호스팅 조건");
     const ecosystem = project.requirements.ecosystems;
     if (ecosystem.state === "unknown") values.push("업무 환경 미확인");
@@ -154,6 +157,7 @@
       for (const value of conditions(project)) tags.append(node("span", "", value));
       content.append(tags, node("p", "catalog-evidence", "시연 후보 · 기능·요금 미검증"));
       card.append(content);
+      window.ToolmeetProjects?.decorate(card, project);
       $("catalog-list").append(card);
     }
     if (projects.length) {

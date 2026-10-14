@@ -170,6 +170,31 @@ for (const prefix of ["/", "/toolmeet/"]) {
     await settleDom();
     assert.match(document.querySelector(".source-link").href, /^https:\/\//);
     assert(nativeRequests.every((request) => !new URL(request).pathname.includes("/api/")), "Static recommendation requests must stay inside the mock API");
+    // The same browsing module and media remain relative in a subdirectory deployment.
+    document.getElementById("projects-tab").click();
+    const selectedCard = cards.find((card) => card.dataset.projectId === "chatgpt");
+    selectedCard.querySelector(".project-preview-toggle").click();
+    assert.equal(selectedCard.querySelector(".project-preview").hidden, false);
+    assert.deepEqual([...selectedCard.querySelectorAll(".project-steps li")].map((el) => el.textContent), catalog.projects.find((p) => p.id === "chatgpt").method.map((m) => m.text));
+    selectedCard.querySelector(".project-preview-close").click();
+    selectedCard.querySelector(".project-detail-open").click();
+    await settleDom();
+    const detail = document.getElementById("project-detail");
+    assert.equal(detail.open, true);
+    assert.equal(detail.dataset.projectId, "chatgpt");
+    assert.equal(new URL(detail.querySelector("img").src).pathname, prefix + "media/catalog/chatgpt.svg");
+    assert.equal(detail.querySelector("a"), null, "Detail must not bypass original-link confirmation");
+    const existingWork = work.value;
+    document.getElementById("project-detail-ask").click();
+    assert.equal(document.querySelector(".source-link"), null, "Selecting a project invalidates the earlier confirmed link immediately");
+    assert.equal(work.value, existingWork);
+    assert.equal(document.getElementById("policy").value, "allowed");
+    assert.equal(document.getElementById("selected-project-context").dataset.projectId, "chatgpt");
+    assert.equal(browser.ToolmeetExploration.state.projectId, "chatgpt");
+    assert.equal(detail.open, false);
+    await settleDom();
+    assert.equal(document.querySelector(".source-link"), null);
+
   } finally {
     dom.window.close();
   }

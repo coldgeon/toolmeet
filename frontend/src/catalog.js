@@ -32,9 +32,10 @@
   }
 
   function validMedia(item, projectId) {
-    if (!item || item.project_id !== projectId || !text(item.id) || item.kind !== "image" ||
+    if (!item || item.project_id !== projectId || !text(item.id) || !["image", "video"].includes(item.kind) ||
         !["actual", "synthetic"].includes(item.content_kind) || !text(item.alt) ||
-        !/^media\/catalog\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)*[a-z0-9]+(?:-[a-z0-9]+)*\.(?:svg|png|jpe?g|webp)$/.test(item.src)) return false;
+        !/^media\/catalog\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)*[a-z0-9]+(?:-[a-z0-9]+)*\.(?:svg|png|jpe?g|webp|mp4|webm)$/.test(item.src)) return false;
+    if ((item.kind === "video") !== /\.(?:mp4|webm)$/.test(item.src)) return false;
     const provenance = item.provenance;
     return provenance && ["owned", "licensed"].includes(provenance.rights_status) &&
       text(provenance.rights_note) && (provenance.source_url === null || text(provenance.source_url)) &&
@@ -75,6 +76,36 @@
     };
   }
 
+
+  // Used by both list and detail; invalid media falls back, invalid project facts fail closed.
+  function validateProject(item) {
+    const bad = () => {throw failure("invalid_payload", "프로젝트 정보가 올바르지 않습니다.", "project");};
+    const ids = (values) => Array.isArray(values) && values.every(text);
+    if (!item || !text(item.id) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.id) || !text(item.name) || !text(item.summary) ||
+        !["service", "public_project", "internal_method"].includes(item.kind) || !strings(item.tasks) || !item.tasks.every((v) => topics.has(v)) ||
+        !Array.isArray(item.evidence) || !item.evidence.length || !Array.isArray(item.method) || !item.method.length || !Array.isArray(item.media)) bad();
+    for (const e of item.evidence) {
+      if (!e || !text(e.id) || !["mock", "reference_read", "code_reviewed", "executed", "unknown"].includes(e.level) ||
+          !text(e.claim) || !text(e.reference) || !(e.checked_at === null || text(e.checked_at))) bad();
+    }
+    const evidenceIds = new Set(item.evidence.map((e) => e.id));
+    if (evidenceIds.size !== item.evidence.length) bad();
+    const refs = (values) => ids(values) && values.every((v) => evidenceIds.has(v));
+    for (const m of item.method) if (!m || !text(m.text) || !["source", "proposed", "mock"].includes(m.origin) || !refs(m.evidence_ids)) bad();
+    const r = item.requirements;
+    for (const [key, test] of Object.entries({external_ai: (v) => typeof v === "boolean", installation: (v) => typeof v === "boolean",
+      ecosystems: (v) => strings(v) && v.every((e) => ["any", "google", "microsoft", "other"].includes(e)), hosting: (v) => ["self_hosted", "cloud"].includes(v)})) {
+      const value = r?.[key];
+      if (!value || !refs(value.evidence_ids) || (value.state === "unknown" ? value.value !== null : value.state !== "known" || !test(value.value) || !value.evidence_ids.length)) bad();
+    }
+    const c = item.cost;
+    if (!c || !refs(c.evidence_ids) || (c.state === "unknown" ? c.amount !== null || c.currency !== null || c.period !== null :
+        c.state !== "known" || typeof c.amount !== "number" || !Number.isFinite(c.amount) || c.amount < 0 || !text(c.currency) || !text(c.period) || !c.evidence_ids.length)) bad();
+    const f = item.fallback;
+    if (!f || !["text", "process"].includes(f.kind) || !text(f.label) || !text(f.text) || !ids(f.steps)) bad();
+    return freeze({...item, media: item.media.filter((m) => validMedia(m, item.id))});
+  }
+
   function freeze(value) {
     if (value && typeof value === "object") {
       Object.values(value).forEach(freeze);
@@ -92,7 +123,7 @@
       throw failure("invalid_payload", "시연 카탈로그의 필수 정보가 올바르지 않습니다.");
     }
     const media = manifest?.contract_version === contractVersion && Array.isArray(manifest.media) ? manifest.media : [];
-    const projects = source.candidates.map((item, index) => project(item, index, media));
+    const projects = source.candidates.map((item, index) => validateProject(project(item, index, media)));
     if (new Set(projects.map((item) => item.id)).size !== projects.length) {
       throw failure("invalid_payload", "시연 카탈로그 ID가 중복되어 있습니다.", "candidates.id");
     }
@@ -114,5 +145,5 @@
     return {contract_version: contractVersion, data_mode: catalog.data_mode, data_note: catalog.data_note, project: selected};
   }
 
-  window.ToolmeetCatalog = Object.freeze({list, get});
+  window.ToolmeetCatalog = Object.freeze({list, get, validateProject});
 })();

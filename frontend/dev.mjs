@@ -15,7 +15,7 @@ const assets = {
   "/explore": ["explore.html", "text/html"],
   "/demo": ["legacy.html", "text/html"],
 };
-for (const name of ["brief.js", "news.js", "app.js", "legacy.js", "catalog.js", "exploration.js", "conversation.js"]) assets[`/${name}`] = [name, "text/javascript"];
+for (const name of ["brief.js", "news.js", "app.js", "legacy.js", "catalog.js", "projects.js", "exploration.js", "conversation.js"]) assets[`/${name}`] = [name, "text/javascript"];
 for (const name of ["brief.css", "discover.css", "style.css"]) assets[`/${name}`] = [name, "text/css"];
 
 export function createFrontendServer({backendPort = 8765} = {}) {
