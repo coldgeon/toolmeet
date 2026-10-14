@@ -88,6 +88,26 @@ async function harness(t) {
   };
 }
 
+test("background resume preserves an answer draft and pending turn revision without creating requests", async (t) => {
+  const app = await harness(t);
+  const pending = app.start(unexplainedWork), snapshot = clone(pending.snapshot);
+  app.byId("catalog-background").click();
+  assert.equal(app.requests.length, 1);
+  assert.deepEqual(pending.snapshot, snapshot);
+  await pending.respond((s) => question(app, s));
+  const field = app.query("#conversation-question textarea"); assert(field);
+  field.value = "담당자와 기한이 있는 표를 원해요";
+  field.dispatchEvent(new app.window.Event("input", {bubbles:true})); field.focus();
+  const text = field.value;
+  app.byId("catalog-background").click();
+  app.byId("projects-tab").click(); app.byId("ask-tab").click();
+  assert.equal(app.query("#conversation-question textarea"), field);
+  assert.equal(field.value, text);
+  assert.equal(app.requests.length, 1);
+  assert.equal(app.confirmations.length, 0);
+  assert.equal(app.byId("work").value, snapshot.work);
+});
+
 function base(app, snapshot, {phase = "recommendation", status = "ready"} = {}) {
   return {contract_version: "exploration.v1", request_id: snapshot.request_id, revision: snapshot.revision,
     data_mode: "mock", data_note: "UI contract fixture · 실제 AI나 기업 적용 검증 아님", phase, status,

@@ -158,8 +158,17 @@ for (const prefix of ["/", "/toolmeet/"]) {
     const work = document.getElementById("work");
     work.value = source.board_posts[0].work;
     work.dispatchEvent(new browser.Event("input", {bubbles: true}));
+    work.focus();
+    assert.equal(document.body.dataset.motion, "paused");
+    const dataCount = nativeRequests.length;
+    document.getElementById("catalog-background").click();
+    assert.equal(document.body.dataset.motion, "running");
+    assert.equal(document.activeElement, work);
+    assert.equal(work.value, source.board_posts[0].work);
+    assert.equal(nativeRequests.length, dataCount, "Background resume must not reload static data");
     for (const [id, value] of Object.entries({policy: "allowed", installation: "allowed", ecosystem: "google", "data-kind": "public", hosting: "self_hosted"})) document.getElementById(id).value = value;
     document.getElementById("brief-form").requestSubmit();
+    assert.equal(document.body.dataset.motion, "paused");
     await settleDom();
     assert.equal(document.getElementById("results").hidden, false);
     assert.equal(document.querySelector(".source-link"), null);
@@ -169,6 +178,11 @@ for (const prefix of ["/", "/toolmeet/"]) {
     candidate.querySelector(".confirm-button").click();
     await settleDom();
     assert.match(document.querySelector(".source-link").href, /^https:\/\//);
+    const confirmedLink = document.querySelector(".source-link");
+    document.getElementById("catalog-background").click();
+    document.getElementById("motion-toggle").click();
+    document.getElementById("motion-toggle").click();
+    assert.equal(document.querySelector(".source-link"), confirmedLink, "Motion control preserves confirmed source guidance under the static base path");
     assert(nativeRequests.every((request) => !new URL(request).pathname.includes("/api/")), "Static recommendation requests must stay inside the mock API");
     // The same browsing module and media remain relative in a subdirectory deployment.
     document.getElementById("projects-tab").click();
