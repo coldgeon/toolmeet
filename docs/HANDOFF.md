@@ -1,5 +1,18 @@
 # 툴밋 인계
 
+## 2026-10-14 #15 배경 정지·재개·전체 화면 배치 구현과 로컬 실행
+
+- 승인: 사람 사용자 `오케이 #15 구현 시작해줘. 다 되면 로컬로 띄워줘.`. [#15](https://github.com/coldgeon/toolmeet/issues/15)의 기존 범위·완료 기준을 보존하고 착수 승인·#6/PR #16 머지·변경/검증 경로를 이슈에 보완했다. 최신 main `297d3182307c9c386dc97e1663794f14c3667438`의 managed worktree `C:/Users/cksrj/.codex/worktrees/issue-15-home-background/u-solve`와 이슈 Development에 연결한 `feat/15-home-background`를 사용한다.
+- exploration.js에서 입력으로 인한 정지와 수동 정지, 움직임 감소를 구분한다. 입력/조건/대화의 실제 조작은 보이는 배경을 정지한다. 비대화 배경 클릭과 명시 재생은 CSS animation을 이어서 재생하며 배경 이벤트가 form·condition·button·tab·link 조작을 대신하지 않는다. 배경 mousedown의 기본 초점 이동만 막고 focus/blur를 호출하지 않는다. 배경 재개는 질문·답변·projectId·revision·request/token/확인 수명을 변경하지 않는다. 새 질문 뒤 조건 details의 늦은 close toggle이 다시 집중 상태를 만들지 않도록 회귀를 보완했다.
+- 배경 폭에 맞춘 열과 높이에 충분한 동일 두 반복 주기를 같은 카탈로그 ID·합성 SVG로 채운다. 입력 시 트랙/카드를 교체하거나 크기·opacity·gradient를 바꾸지 않는다. ResizeObserver로 화면·조건 높이에 맞추며 주기 크기가 달라질 때 실제 animation 시간 위치를 보정해 픽셀 위치를 보존한다. reduced-motion은 animation을 제거하지 않고 pause해 설정 변경 뒤에도 위치를 이어간다.
+- question-stage의 내용은 clip하지 않고 배경 레이어만 clip한다. scrollbar-gutter로 입력/대화에 따른 스크롤바 등장 시 배경 너비가 바뀌는 것을 줄였다. 헤더/탭/푸터를 뺀 기본 화면 높이와 짧은 desktop/mobile 간격을 조정했다. 답변 전 입력만 한 화면에서는 하단 예시 목록의 여백을 숨기고 대화/추천이 생기면 기존 목록을 제공한다. 긴 입력의 textarea 스크롤, 조건 펼침·프로젝트 맥락·대화/추천·목록의 문서 스크롤을 보존했다.
+- 최종 검증: npm test PASS(프론트 182 = 기존 175 + 보존/초기화 회귀 7, Python 13, workflow 정책 3, 정적 mock /toolmeet/·HTTP 통합 15조합), npm run build PASS, git diff --check PASS. 실제 mock/DOM과 제어 가능한 요청 fixture를 사용했으며 일반 시험에서 실제 Codex·유료 API를 호출하지 않았다. 정적 /toolmeet/에서 배경 재개와 모션 제어가 데이터 재조회/확인 링크 무효화를 만들지 않음을 추가로 검증했다.
+- 브라우저 검증: 1058×641 요청(실제 viewport 1058×642 반올림), 1322×712·1366×768·1440×900·1920×1080, 320/360/390×800·360×560. 기본/입력 상태에서 정상 높이 화면은 스크롤 없이 입력·제출·안내·모션 제어·푸터에 접근하고, 360×560은 세로 스크롤을 허용한다. 가로 넘침 없음과 배경 반복 주기 높이/동일 타일 채움을 확인했다. 두 번 읽은 paused transform이 같고 재개 시 0으로 초기화하지 않으며 카드 크기/opacity가 유지됐다. mobile 조건 펼침으로 주기가 늘어나도 transform 유지, 배경 클릭 후 입력/조건/확인 URL 보존, Space 모션 제어, 320px 프리뷰·상세·기존 질문과 같은 프로젝트 맥락 연결을 확인했다. 긴 480자 입력과 짧은 화면/프로젝트 맥락에서 내부·문서 스크롤 영역이 존재하고 가로 넘침이 없다. 콘솔 오류 없음. 브라우저 입력 한 건의 CDP 지연은 현재 상태 재확인 후 키보드로 완료했으며 제품 오류로 단정하지 않았다.
+- 실제 휴대폰·소프트 키보드·OS 움직임 감소 설정 변경·실제 브라우저 확대·스크린리더·실제 AI/자동 수집/도구 실행·공개 배포는 미검증이다. 움직임 감소 우선과 수동 선택 유지/대기·역순 응답 수명은 DOM fixture 검증이다. backend/shared/API/추천 계약·#8 조사 데이터·새 후보/미디어·프레임워크·배포 설정은 변경하지 않았다.
+- Seed `seed_8ba8dea90677`, 전체 시험 로그·브라우저 크기/모션 JSON·desktop/mobile JPG·PR 초안은 `C:/Users/cksrj/.codex/visualizations/2026/10/14/01a1392a-af12-7ba3-acb8-e186d87f6be7/`에 보존한다. 현재 Ouroboros 도구·CLI와 Discord 연결 도구가 없어 로컬 Seed/원본 이슈·저장소로 진행했고 다른 반복 실행기나 외부 메시지는 추가하지 않았다.
+- 사용자가 요청한 로컬 서버는 이 worktree의 npm run dev로 http://127.0.0.1:5173 (API 8765)에 띄우고 브라우저 탭을 남긴다. PC/프로세스 종료 뒤에는 같은 폴더에서 npm run dev로 재시작한다. 원래 공유 폴더는 pull/checkout/reset/clean하지 않았고 다른 채팅의 미커밋 초안을 보존했다.
+- 다음: 완료 보고와 PR 제목·본문 전체 초안 제출 후 **사람 PR 생성 승인**을 기다린다. 승인 시 최신 main/열린 PR 경로 중복·head를 재확인하고 작업 브랜치 정상 push·Closes #15의 일반 PR을 생성한다. 원격 CI·머지·태그·배포는 후속 승인/검증 단계다. 이번 구현에서 PR을 생성하거나 머지·태그·배포하지 않았다.
+
 ## 2026-10-13 #6 프로젝트 프리뷰·상세·질문 연결 · 로컬 검증 완료
 
 - 승인: 사용자 “좋아, #6 구현 시작해. 기존 스택과 승인된 이슈 범위로 진행하고, 완료 후 검증 결과와 PR 초안을 보여줘. PR 생성·머지·태그·배포는 별도 승인으로 남겨줘. 또한 다 되면 로칼로 한 번 띄워주라”. [이슈 #6](https://github.com/coldgeon/toolmeet/issues/6)의 기존 목표를 확대하지 않고 경로/승인 메타데이터를 보완했다. 이슈에 연결된 `feat/6-project-preview`, `C:/Users/cksrj/.codex/worktrees/issue-6-project-preview/u-solve`를 최신 origin/main `b2a1ac6df3765822182357c3010c8d7618b38132`에서 준비했다. 원래 공유 폴더·#5와 #8 worktree의 미커밋 변경을 옮기거나 수정하지 않았다.

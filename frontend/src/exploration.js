@@ -3,12 +3,61 @@
   const $ = (id) => document.getElementById(id);
   const script = document.currentScript || document.querySelector('script[src$="exploration.js"]');
   const appBase = new URL(".", script?.src || document.baseURI);
-  const state = {tab: "ask", focused: false, motionPaused: false, reducedMotion: false, projectId: null};
+  const state = {tab: "ask", focused: false, interactionPaused: false, motionPaused: false, reducedMotion: false, projectId: null};
   let catalogReady = false;
   let loadGeneration = 0;
   const topicLabels = {meeting: "회의·후속 작업", summary: "자료·문서 요약", forms: "양식·초안", planning: "기획·조사", coding: "개발·자동화"};
   const kindLabels = {service: "AI 서비스", public_project: "공개 프로젝트", internal_method: "툴밋 내부 방법"};
   const tabs = [$("ask-tab"), $("projects-tab")];
+  let backgroundProjects = [];
+  let backgroundLayout = "";
+
+  function fitQuestionStage() {
+    const main = $("main"), toolbar = document.querySelector(".exploration-toolbar"), footer = document.querySelector(".home-footer");
+    const outerHeight = (element) => {
+      const style = getComputedStyle(element);
+      return element.getBoundingClientRect().height + (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
+    };
+    const height = [document.querySelector(".site-header"), document.querySelector(".source-banner"), toolbar, footer].reduce((sum, element) => sum + outerHeight(element), 0) + (parseFloat(getComputedStyle(main).paddingTop) || 0);
+    document.body.style.setProperty("--question-chrome-height", `${Math.ceil(height)}px`);
+  }
+
+  function fillBackground() {
+    const background = $("catalog-background"), track = background.firstElementChild;
+    if (!track || !backgroundProjects.length) return;
+    const box = background.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    const width = Math.max(660, box.width), columns = Math.ceil(width / 330), gap = 18;
+    const rowHeight = ((width - (columns - 1) * gap) / columns) * 440 / 720 + gap;
+    const rows = Math.max(Math.ceil(backgroundProjects.length / columns), Math.ceil(box.height / rowHeight) + 1);
+    const key = `${columns}:${rows}`;
+    const animation = track.getAnimations?.().find((item) => item.animationName === "catalog-rise");
+    const oldHeight = track.firstElementChild?.getBoundingClientRect().height;
+    const oldTime = animation?.currentTime;
+    track.style.width = `${width}px`;
+    track.style.setProperty("--background-columns", columns);
+    if (key !== backgroundLayout) {
+      backgroundLayout = key;
+      // Keep the animated track itself alive: input pauses never restart its clock.
+      track.replaceChildren();
+      for (let copy = 0; copy < 2; copy++) {
+        const cycle = node("div", "background-cycle");
+        for (let index = 0; index < rows * columns; index++) {
+          const project = backgroundProjects[index % backgroundProjects.length];
+          const card = node("div", "background-card");
+          card.dataset.projectId = project.id;
+          card.append(visual(project, true));
+          cycle.append(card);
+        }
+        track.append(cycle);
+      }
+    }
+    const height = track.firstElementChild.getBoundingClientRect().height;
+    const duration = animation?.effect?.getTiming().duration;
+    if (oldHeight && height && oldHeight !== height && typeof oldTime === "number" && typeof duration === "number" && duration > 0) {
+      animation.currentTime = Math.floor(oldTime / duration) * duration + (oldTime % duration) * oldHeight / height;
+    }
+  }
 
   function node(tag, className = "", text = "") {
     const el = document.createElement(tag);
@@ -20,7 +69,7 @@
   function sync() {
     document.body.dataset.mode = state.focused ? "focused" : "initial";
     document.body.dataset.tab = state.tab;
-    const running = state.tab === "ask" && !state.focused && !state.motionPaused && !state.reducedMotion && catalogReady;
+    const running = state.tab === "ask" && !state.interactionPaused && !state.motionPaused && !state.reducedMotion && catalogReady;
     document.body.dataset.motion = running ? "running" : "paused";
     $("ask-panel").hidden = state.tab !== "ask";
     $("projects-panel").hidden = state.tab !== "projects";
@@ -31,12 +80,13 @@
     }
     $("new-question").hidden = !state.focused;
     $("question-examples").hidden = !state.focused;
-    $("motion-controls").hidden = state.focused || state.tab !== "ask";
+    $("motion-controls").hidden = state.tab !== "ask";
     const toggle = $("motion-toggle");
     toggle.setAttribute("aria-pressed", String(state.motionPaused));
     toggle.disabled = state.reducedMotion || !catalogReady;
-    toggle.textContent = state.reducedMotion ? "움직임 감소 설정으로 정지됨" : state.motionPaused ? "배경 움직임 재생" : "배경 움직임 정지";
-    $("motion-description").textContent = state.reducedMotion ? "기기의 움직임 감소 설정을 따릅니다." : !catalogReady ? "배경 자료 없이도 질문을 사용할 수 있습니다." : "입력에 집중하면 배경 움직임이 멈춥니다. 새 질문에서도 수동 정지 선택은 유지됩니다.";
+    toggle.textContent = state.reducedMotion ? "움직임 감소 설정으로 정지됨" : state.motionPaused || state.interactionPaused ? "배경 움직임 재생" : "배경 움직임 정지";
+    $("motion-description").textContent = state.reducedMotion ? "기기의 움직임 감소 설정을 따릅니다." : !catalogReady ? "배경 자료 없이도 질문을 사용할 수 있습니다." : state.motionPaused ? "수동으로 정지했습니다. 재생 버튼을 누르면 이어서 움직입니다." : "입력·조건을 조작하면 현재 모습으로 멈춥니다. 입력 영역 밖 배경이나 재생 버튼으로 이어서 움직입니다.";
+    fillBackground();
   }
 
   function selectTab(tab) {
@@ -48,7 +98,9 @@
 
   function focusQuestion() {
     state.focused = true;
-    selectTab("ask");
+    state.interactionPaused = true;
+    if (state.tab !== "ask") selectTab("ask");
+    else sync();
   }
 
   for (const tab of tabs) {
@@ -61,22 +113,40 @@
       next.focus();
     });
   }
-  $("work").addEventListener("focus", focusQuestion);
-  $("work").addEventListener("click", focusQuestion);
-  $("work").addEventListener("input", focusQuestion);
+  for (const surface of [$("brief-form"), $("selected-project-context"), document.querySelector(".answer-content")]) {
+    for (const type of ["focusin", "pointerdown", "click", "input", "change"]) {
+      surface.addEventListener(type, (event) => {
+        if (event.target.closest("input, textarea, select, button, summary, label, [contenteditable='true']")) focusQuestion();
+      });
+    }
+  }
   $("environment-details").addEventListener("toggle", () => {
     if ($("environment-details").open) focusQuestion();
+  });
+  const questionStage = document.querySelector(".question-stage");
+  const isBackground = (event) => state.tab === "ask" && !event.target.closest(".input-card, .selected-project-context, .motion-controls, button, a, input, textarea, select, summary, [role='button'], [contenteditable='true']");
+  questionStage.addEventListener("mousedown", (event) => {
+    if (isBackground(event)) event.preventDefault(); // Keep the user's current focus; never focus or blur the input here.
+  });
+  questionStage.addEventListener("click", (event) => {
+    if (!isBackground(event) || event.defaultPrevented) return;
+    state.interactionPaused = false;
+    sync();
   });
   document.addEventListener("toolmeet:focus-question", focusQuestion);
   document.addEventListener("toolmeet:project-context", (event) => {state.projectId = event.detail?.project_id ?? null;});
   $("motion-toggle").addEventListener("click", () => {
     if (state.reducedMotion || !catalogReady) return;
-    state.motionPaused = !state.motionPaused;
+    if (state.motionPaused || state.interactionPaused) {
+      state.motionPaused = false;
+      state.interactionPaused = false;
+    } else state.motionPaused = true;
     sync();
   });
   $("new-question").addEventListener("click", () => {
     document.dispatchEvent(new Event("toolmeet:new-question"));
     state.focused = false;
+    state.interactionPaused = false;
     state.projectId = null;
     selectTab("ask");
     const url = new URL(location.href);
@@ -162,6 +232,8 @@
     }
     if (projects.length) {
       const track = node("div", "background-track");
+      backgroundProjects = projects;
+      backgroundLayout = "";
       for (let copy = 0; copy < 2; copy++) {
         const cycle = node("div", "background-cycle");
         for (const project of projects) {
@@ -173,6 +245,7 @@
         track.append(cycle);
       }
       $("catalog-background").append(track);
+      fillBackground();
     }
   }
 
@@ -212,6 +285,13 @@
     }
   });
   window.ToolmeetExploration = {state, focusQuestion, selectTab};
+  if (typeof ResizeObserver === "function") {
+    const backgroundObserver = new ResizeObserver(fillBackground);
+    backgroundObserver.observe($("catalog-background"));
+    const chromeObserver = new ResizeObserver(fitQuestionStage);
+    for (const element of document.querySelectorAll(".site-header, .source-banner, .exploration-toolbar, .home-footer")) chromeObserver.observe(element);
+    fitQuestionStage();
+  } else window.addEventListener("resize", () => {fitQuestionStage(); fillBackground();});
   sync();
   loadCatalog();
 })();

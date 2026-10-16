@@ -100,6 +100,28 @@ async function harness(t, {deferDetails = false, mediaManifest = manifest} = {})
   };
 }
 
+test("background pause/resume preserves selected project, recommendation revision and confirmed link", async (t) => {
+  const app = await harness(t);
+  await app.ready(); await app.select("chatgpt");
+  await app.answer(app.briefs().at(-1));
+  const current = clone(app.snapshots.at(-1)), count = app.snapshots.length, contexts = app.contexts.length;
+  const confirmation = await app.beginConfirm();
+  const selection = clone(confirmation.body);
+  app.byId("catalog-background").click();
+  app.byId("motion-toggle").click(); app.byId("motion-toggle").click();
+  await confirmation.respond({source_url:"https://chatgpt.com/"});
+  const link = app.links()[0]; assert(link);
+  app.byId("work").focus(); app.byId("catalog-background").click();
+  assert.equal(app.links()[0], link);
+  assert.equal(app.snapshots.length, count);
+  assert.deepEqual(app.snapshots.at(-1), current);
+  assert.deepEqual(confirmation.body, selection);
+  assert.equal(app.contexts.length, contexts);
+  assert.equal(app.window.ToolmeetExploration.state.projectId, "chatgpt");
+  assert.equal(app.byId("selected-project-context").hidden, false);
+  assert.equal(app.byId("work").value, current.work);
+});
+
 function assertPreview(app, id, open) {
   assert.equal(app.preview(id).hidden, !open);
   assert.equal(app.toggle(id).getAttribute("aria-expanded"), String(open));

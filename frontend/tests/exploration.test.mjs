@@ -146,6 +146,105 @@ function assertNewQuestion(app) {
   assert.equal(app.document.activeElement, app.byId("ask-tab"));
 }
 
+test("background resumes the paused track without replacing cards or changing input focus and conditions", async (t) => {
+  const app = await harness(t);
+  const track = app.byId("catalog-background").firstElementChild;
+  const firstCard = track.querySelector(".background-card");
+  app.edit(question);
+  for (const [id, value] of Object.entries(environment)) app.byId(id).value = value;
+  app.byId("work").focus();
+  assert.equal(app.byId("motion-controls").hidden, false);
+  assert.equal(app.document.body.dataset.motion, "paused");
+  const backgroundDown = new app.window.MouseEvent("mousedown", {bubbles:true, cancelable:true});
+  app.byId("catalog-background").dispatchEvent(backgroundDown);
+  assert.equal(backgroundDown.defaultPrevented, true, "Background mouse input preserves the current focus");
+  const inputDown = new app.window.MouseEvent("mousedown", {bubbles:true, cancelable:true});
+  app.byId("work").dispatchEvent(inputDown);
+  assert.equal(inputDown.defaultPrevented, false, "Normal input mouse actions must remain native");
+  app.document.querySelector(".question-stage").click();
+  assert.equal(app.document.body.dataset.motion, "running");
+  assert.equal(app.document.activeElement, app.byId("work"));
+  assert.equal(app.byId("work").value, question);
+  for (const [id, value] of Object.entries(environment)) assert.equal(app.byId(id).value, value);
+  assert.equal(app.byId("catalog-background").firstElementChild, track);
+  assert.equal(track.querySelector(".background-card"), firstCard);
+  assert.equal(app.briefs().length, 0);
+  app.byId("work").dispatchEvent(new app.window.Event("pointerdown", {bubbles:true}));
+  assert.equal(app.document.body.dataset.motion, "paused");
+});
+
+test("form, condition, motion controls and tab interactions never act as background resume", async (t) => {
+  const app = await harness(t);
+  app.byId("work").focus();
+  for (const element of [app.byId("brief-form"), app.byId("work"), app.document.querySelector(".input-label"), app.document.querySelector("#environment-details summary"), app.byId("submit"), app.document.querySelector("#motion-controls p")]) {
+    element.click();
+    assert.equal(app.document.body.dataset.motion, "paused");
+  }
+  app.byId("projects-tab").click(); app.byId("ask-tab").click();
+  assert.equal(app.document.body.dataset.motion, "paused");
+  app.byId("catalog-background").click();
+  assert.equal(app.document.body.dataset.motion, "running");
+  app.byId("policy").focus();
+  assert.equal(app.document.body.dataset.motion, "paused", "Keyboard condition focus pauses too");
+});
+
+test("background auto-resume respects manual pause and reduced motion; explicit play resumes interaction pause", async (t) => {
+  const app = await harness(t);
+  app.byId("motion-toggle").click();
+  app.byId("work").focus();
+  app.byId("catalog-background").click();
+  assert.equal(app.document.body.dataset.motion, "paused");
+  assert.equal(app.byId("motion-toggle").getAttribute("aria-pressed"), "true");
+  app.changeMotion(true);
+  app.byId("catalog-background").click();
+  app.changeMotion(false);
+  assert.equal(app.document.body.dataset.motion, "paused");
+  app.byId("motion-toggle").click();
+  assert.equal(app.document.body.dataset.motion, "running");
+  app.byId("work").click();
+  app.changeMotion(true);
+  app.byId("catalog-background").click();
+  assert.equal(app.document.body.dataset.motion, "paused");
+  app.changeMotion(false);
+  assert.equal(app.document.body.dataset.motion, "running");
+  app.byId("work").click();
+  app.byId("motion-toggle").click();
+  assert.equal(app.document.body.dataset.motion, "running");
+});
+
+test("background click keeps a pending recommendation alive and preserves its eventual confirmed link", async (t) => {
+  const app = await harness(t);
+  for (const [id, value] of Object.entries(environment)) app.byId(id).value = value;
+  app.edit(question); app.byId("brief-form").requestSubmit();
+  const pending = app.briefs()[0], input = app.byId("work");
+  app.byId("catalog-background").click();
+  assert.equal(app.byId("submit").disabled, true);
+  assert.equal(app.briefs().length, 1);
+  await app.answer(pending);
+  const confirmation = app.beginConfirm();
+  app.byId("catalog-background").click();
+  await confirmation.respond({source_url:"https://chatgpt.com/"});
+  const link = app.links()[0]; assert(link);
+  app.byId("catalog-background").click();
+  assert.equal(app.links()[0], link);
+  assert.equal(app.byId("work"), input);
+  assert.equal(input.value, question);
+  assert.equal(app.briefs().length, 1);
+  assert.equal(app.confirms().length, 1);
+});
+
+test("new question stays initial after the delayed close event of expanded conditions", async (t) => {
+  const app = await harness(t);
+  app.edit(question);
+  app.byId("environment-details").open = true;
+  await flush();
+  app.byId("new-question").click();
+  await flush();
+  assertNewQuestion(app);
+  assert.equal(app.document.body.dataset.motion, "running");
+  assert.equal(app.byId("question-examples").hidden, true);
+});
+
 test("two tabs expose linked panels and support roving keyboard selection", async (t) => {
   const app = await harness(t);
   for (const name of ["ask", "projects"]) {
