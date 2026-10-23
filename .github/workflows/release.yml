@@ -1,0 +1,121 @@
+name: Tagged GitHub Pages release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: toolmeet-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      tag: ${{ steps.validate.outputs.tag }}
+      commit: ${{ steps.validate.outputs.commit }}
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_REF: ${{ github.ref }}
+      EXPECTED_RELEASE_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Validate release tag and commit
+        id: validate
+        run: node scripts/validate_release.mjs
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+      - name: Write release manifest
+        run: node scripts/validate_release.mjs --write-manifest
+      - name: Package versioned site
+        run: tar -czf "$RUNNER_TEMP/toolmeet-$RELEASE_TAG.tar.gz" -C frontend/dist .
+      - uses: actions/upload-artifact@v7
+        with:
+          name: toolmeet-release
+          path: ${{ runner.temp }}/toolmeet-${{ steps.validate.outputs.tag }}.tar.gz
+          if-no-files-found: error
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.build.outputs.commit }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: toolmeet-release
+          path: ${{ runner.temp }}/release-bundle
+      - name: Restore expected site for public verification
+        env:
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
+        run: |
+          mkdir -p frontend/dist
+          tar -xzf "$RUNNER_TEMP/release-bundle/toolmeet-$RELEASE_TAG.tar.gz" -C frontend/dist
+      - uses: actions/configure-pages@v6
+        with:
+          enablement: false
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+      - name: Verify public version and every site file
+        run: node scripts/verify_deployment.mjs
+        env:
+          PUBLIC_SITE_URL: ${{ steps.deployment.outputs.page_url }}
+
+  release:
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ needs.build.outputs.tag }}
+      RELEASE_COMMIT: ${{ needs.build.outputs.commit }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: toolmeet-release
+          path: ${{ runner.temp }}/release-bundle
+      - name: Register a verified release without replacing existing assets
+        run: |
+          if existing="$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft,isPrerelease --jq '.isDraft == false and .isPrerelease == false' 2>/dev/null)"; then
+            test "$existing" = true
+            echo "Existing successful release retained: $RELEASE_TAG"
+          else
+            gh release create "$RELEASE_TAG" "$RUNNER_TEMP/release-bundle/toolmeet-$RELEASE_TAG.tar.gz" --repo "$GITHUB_REPOSITORY" --verify-tag --title "Toolmeet $RELEASE_TAG" --notes "정적 mock 시연입니다. 실제 AI·자동 수집·도구 실행은 포함하지 않습니다. Commit: $RELEASE_COMMIT" --generate-notes
+          fi

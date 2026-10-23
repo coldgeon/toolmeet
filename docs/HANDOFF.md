@@ -1,5 +1,16 @@
 # 툴밋 인계
 
+## 2026-10-23 #18 구현·Pages 최초 설정 완료 · PR 준비
+
+- 이슈 [#18](https://github.com/coldgeon/toolmeet/issues/18) 등록 후 사용자 `배포 진행하자`로 별도 구현 시작을 확인했다. 최신 main `f8678c6800b1b32f5bdc0eb343c9153d772f86a9`에서 managed worktree `C:/Users/cksrj/.codex/worktrees/issue-18-pages-release/u-solve`를 만들고 이슈 Development에 연결한 `chore/18-pages-release` 브랜치를 선택했다. 공유 폴더와 다른 worktree의 미커밋 파일을 가져오지 않았다.
+- `.github/workflows/release.yml`의 build는 이벤트 SHA 고정 checkout·주석/안정 태그·package 버전·main 포함 확인·전체 시험/빌드·release.json·버전 tar/Pages artifact를 처리한다. deploy는 Pages write/OIDC 권한으로 배포하고 같은 묶음의 manifest 및 모든 빌드 파일 SHA256을 실제 page_url에서 확인한다. release는 앞 두 job 성공 후 contents write로 Release를 생성하며 기존 Release 자산을 덮어쓰지 않는다. 공용 동시 실행 그룹·태그 push 전용·credential 미보존을 적용했다.
+- `validate_release.mjs`, `verify_deployment.mjs`, 릴리스 회귀 33개와 실행/복구 `docs/RELEASE.md`를 추가했다. yaml 2.9.1은 workflow 정책 시험용 개발 의존성이며 npm test에 연결했다. 프론트 소스/빌드·API/공용 데이터·버전 값은 변경하지 않았다.
+- 검증: targeted 릴리스 33 PASS, 전체 npm test PASS(릴리스 33+정책 3·프론트 182·Python 13·정적 /toolmeet/·HTTP 통합 15조합), npm run build PASS. 공식 rhysd/actionlint 1.7.12 Windows 배포 파일의 SHA256을 검증한 뒤 release.yml 검사 PASS(shellcheck 외부 실행은 비활성). git diff --check PASS. fixture Git 태그는 OS 임시 디렉터리에만 만들고 범위를 검사해 정리했다. 실제 저장소 태그·유료/AI API는 호출하지 않았다.
+- 승인 범위의 외부 설정: Pages build_type workflow·HTTPS true, github-pages custom_branch_policies true, 단일 name v*/type tag 규칙을 설정했다. Pages 최초 생성이 main branch 규칙을 자동 추가해 그 id 64073534의 이름/유형을 재확인하고 제거했다. 기존 환경이 없는 상태를 먼저 보존했고 다른 보호 설정을 바꾸지 않았다. 최종 v* 정책 id는 64073532다.
+- 실제 태그·Release·deployment는 0건이고 https://coldgeon.github.io/toolmeet/ 은 아직 HTTP 404다. 최초 설정·로컬 fixture를 실제 공개 배포 성공으로 보고하지 않는다. GitHub Actions의 원격 Windows/Linux/PR CI·태그 이벤트·공개 CDN·실제 공개 브라우저 흐름은 PR/후속 배포 단계에서 확인한다.
+- 근거는 채팅 산출물 `C:/Users/cksrj/.codex/visualizations/2026/10/14/01a1392a-af12-7ba3-acb8-e186d87f6be7/`의 issue18-seed.json·issue18-npm-test.log·issue18-pages-before.json·issue18-pages-configured.json·설정 JSON과 actionlint 파일에 있다. Ouroboros 도구/CLI가 없어 로컬 Seed를 사용했고 다른 반복 실행기를 추가하지 않았다. Discord 호출 도구가 없어 조회/게시하지 않았다.
+- 다음은 현재 main/열린 PR 중복과 clean commit 확인 후 전체 PR 초안을 사용자에게 제시하는 것이다. PR 생성·머지는 각각 별도 사람 승인 단계다. 실제 첫 태그 v0.1.0과 릴리스 커밋은 구성 머지 후 확정하며 버전 태그를 미리 만들지 않는다. 원래 공유 폴더는 pull/checkout/reset/clean하지 않는다.
+
 ## 2026-10-14 #15 배경 정지·재개·전체 화면 배치 구현과 로컬 실행
 
 - 승인: 사람 사용자 `오케이 #15 구현 시작해줘. 다 되면 로컬로 띄워줘.`. [#15](https://github.com/coldgeon/toolmeet/issues/15)의 기존 범위·완료 기준을 보존하고 착수 승인·#6/PR #16 머지·변경/검증 경로를 이슈에 보완했다. 최신 main `297d3182307c9c386dc97e1663794f14c3667438`의 managed worktree `C:/Users/cksrj/.codex/worktrees/issue-15-home-background/u-solve`와 이슈 Development에 연결한 `feat/15-home-background`를 사용한다.
