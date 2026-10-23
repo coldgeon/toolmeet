@@ -1,5 +1,12 @@
 # 툴밋 현재 상태
 
+## 2026-10-23 v0.1.0 공개 배포 완료 · 기록 PR #20
+
+- [PR #19](https://github.com/coldgeon/toolmeet/pull/19)가 `main`의 `9fc3b3c2bce711bf9dab5c7f6663140da7d5c101`로 병합됐다. 같은 커밋의 main CI가 통과한 뒤 주석 태그 [`v0.1.0`](https://github.com/coldgeon/toolmeet/releases/tag/v0.1.0)을 만들고 검증 스크립트를 통과시켜 push했다.
+- [릴리스 Actions](https://github.com/coldgeon/toolmeet/actions/runs/39963182463)의 build·deploy·release 세 job이 모두 성공했다. [GitHub Pages](https://coldgeon.github.io/toolmeet/)와 [AI 뉴스](https://coldgeon.github.io/toolmeet/news/)가 HTTP 200을 반환하고, 공개 [`release.json`](https://coldgeon.github.io/toolmeet/release.json)은 `v0.1.0`·위 커밋·`static-mock`을 명시한다. GitHub Release에는 `toolmeet-v0.1.0.tar.gz`가 첨부됐다.
+- 공개 브라우저에서 홈의 예시 질문→조건 확인 대화와 뉴스 목록→요약 상세를 조작해 확인했다. 릴리스 workflow는 공개 파일 전체의 SHA256을 빌드 묶음과 비교했다. 실제 휴대폰·스크린리더와 실제 AI·기사 수집·Python API 배포는 검증하거나 구현하지 않았다. 이번 기록 변경은 [이슈 #20](https://github.com/coldgeon/toolmeet/issues/20)의 별도 PR에서 검토한다.
+- 아래 #18 항목은 2026-10-23 **배포 전** 구현 당시의 기록이다. 현재 배포 상태는 이 항목을 따른다.
+
 ## 2026-10-23 #18 배포 구성 구현·검증 완료 · PR 초안 승인 대기
 
 - 사용자 `배포 진행하자`를 이슈 등록 후 별도 구현 시작 지시로 확인하고 최신 main `f8678c6800b1b32f5bdc0eb343c9153d772f86a9`의 전용 worktree `C:/Users/cksrj/.codex/worktrees/issue-18-pages-release/u-solve`와 Development 연결 `chore/18-pages-release`에서 구현했다. 원래 공유 폴더와 #8 변경은 보존했다.

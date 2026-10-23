@@ -4,14 +4,15 @@
 
 - 공개 대상은 `frontend/src/`에서 빌드한 질문·프로젝트·뉴스 **정적 mock 시연**이다. `/explore`·`/demo`와 Python API는 로컬에 보존하며 이 배포에 포함하지 않는다. 실제 AI·자동 수집·외부 도구 실행·#8 조사 자료 연결은 별도 범위다.
 - 2026-10-23 #18의 승인된 구현 단계에서 Pages를 GitHub Actions 방식으로 설정했다. `github-pages` 환경은 `v*` **태그 한 규칙만** 허용하며 HTTPS가 적용된다. Pages 생성 시 자동 추가된 `main` 브랜치 허용 규칙은 제거했다.
-- 이 문서 작성 시점에는 배포 구성이 작업 브랜치에 있고 PR 생성 승인 대기다. 실제 태그·배포·GitHub Release는 없으며 예정 주소는 HTTP 404다. 설정 완료를 공개 배포 완료로 해석하지 않는다.
-- 예정 주소는 `https://coldgeon.github.io/toolmeet/`다. 성공 주소는 배포 action의 `page_url` 출력과 공개 검증 결과로 확정한다.
+- [PR #19](https://github.com/coldgeon/toolmeet/pull/19)가 `main`의 `9fc3b3c2bce711bf9dab5c7f6663140da7d5c101`에 병합된 뒤, 같은 커밋을 가리키는 주석 태그 `v0.1.0`으로 첫 배포를 실행했다. [Actions 실행](https://github.com/coldgeon/toolmeet/actions/runs/39963182463)의 build·deploy·release 세 job이 모두 성공했고, [GitHub Release](https://github.com/coldgeon/toolmeet/releases/tag/v0.1.0)에 `toolmeet-v0.1.0.tar.gz`가 첨부됐다.
+- 실제 공개 주소는 <https://coldgeon.github.io/toolmeet/>다. 홈·`/news/`가 HTTP 200이고 공개 [`release.json`](https://coldgeon.github.io/toolmeet/release.json)의 tag/version/commit/mode는 `v0.1.0`/`0.1.0`/위 SHA/`static-mock`이다. deploy job은 공개 manifest와 모든 사이트 파일의 SHA256을 빌드 묶음과 대조해 통과했다.
+- 공개 브라우저에서 홈의 mock 고지·예시 질문 후 조건 확인 대화와 뉴스 목록·상세를 조작해 확인했다. 실제 휴대폰·스크린리더·전체 추천/방향 확인 흐름은 이번 수동 브라우저 검증 범위 밖이다.
 
 ## 승인과 버전
 
-이슈 초안 승인 → 이슈 등록 → 별도 구현 시작 → 완료 보고·전체 PR 초안 → PR 생성 승인 → PR 등록 → 해당 PR의 별도 머지 승인·CI 성공 → 승인 head를 지정한 Squash merge 순서를 따른다. `main` 직접 push·강제 push·관리자 우회·자동 머지를 사용하지 않는다.
+구성 작업 #18과 PR #19는 병합 완료됐다. 최초 배포 지시와 검증 결과는 위 현재 상태를 따른다. 이후 제품·배포 구성 변경은 이슈·별도 브랜치/PR·CI 검토 절차를 따른다. `main` 직접 push·강제 push·관리자 우회·자동 머지를 사용하지 않는다.
 
-첫 버전 제안은 현재 루트 `package.json`·lockfile의 버전과 같은 `v0.1.0`이다. 구성 머지를 태그 생성 승인으로 해석하지 않는다. 사용자가 배포할 **버전과 정확한 main 커밋**을 확정하면 그 커밋의 main 포함 여부·CI 성공과 미사용 태그를 확인해 주석 태그 하나를 push한다. 버전 변경은 별도 이슈/PR에서 `npm version <버전> --no-git-tag-version`으로 package와 lockfile을 함께 갱신한다.
+첫 버전은 루트 `package.json`·lockfile과 같은 `v0.1.0`으로 배포 완료됐다. 후속 버전은 배포할 **버전과 정확한 main 커밋**을 확인한 뒤 그 커밋의 main 포함 여부·CI 성공과 미사용 태그를 검사해 주석 태그 하나를 push한다. 버전 변경은 별도 이슈/PR에서 `npm version <버전> --no-git-tag-version`으로 package와 lockfile을 함께 갱신한다.
 
 - 운영 태그는 `v0.1.0` 같은 안정 버전이어야 한다. prerelease·build suffix·선행 0·가벼운 태그는 거부한다.
 - 태그 버전은 루트 package 버전과 같아야 하며 태그 커밋은 checkout·이벤트 SHA와 일치하고 `origin/main`에 포함돼야 한다.
@@ -19,18 +20,18 @@
 
 ## 실행 예시
 
-다음은 **후속 버전 배포 지시를 받은 뒤** 사용하는 예시다. `APPROVED_MAIN_SHA`를 실제 승인된 SHA로 바꾸고, 깨끗한 별도 worktree에서 실행한다. 다른 미커밋 작업이 있는 공유 폴더는 전환하거나 pull하지 않는다.
+다음은 **후속 버전 배포 지시를 받은 뒤** 버전 값을 바꿔 사용하는 예시다. `APPROVED_MAIN_SHA`를 실제 승인된 SHA로 바꾸고, 깨끗한 별도 worktree에서 실행한다. 다른 미커밋 작업이 있는 공유 폴더는 전환하거나 pull하지 않는다. 이미 배포된 `v0.1.0` 태그를 이 예시로 다시 만들거나 이동하지 않는다.
 
 ```powershell
 git fetch origin main --tags
 git switch --detach APPROVED_MAIN_SHA
-# 원격 main 포함·해당 SHA의 CI 성공·package 0.1.0·동명 태그 없음 확인
-git tag -a v0.1.0 APPROVED_MAIN_SHA -m "Toolmeet v0.1.0"
-node scripts/validate_release.mjs v0.1.0
-git push origin refs/tags/v0.1.0
+# 원격 main 포함·해당 SHA의 CI 성공·package 버전·동명 태그 없음 확인
+git tag -a vNEXT APPROVED_MAIN_SHA -m "Toolmeet vNEXT"
+node scripts/validate_release.mjs vNEXT
+git push origin refs/tags/vNEXT
 ```
 
-구성 PR 승인 전에 실행하지 않는다. 태그 생성/검증이 실패하면 push하지 않고 원인과 현재 ref 상태를 보고한다. 이미 원격에 존재하는 태그는 수정하지 않는다.
+`vNEXT`는 실제 새 안정 버전으로 바꾼다. 태그 생성/검증이 실패하면 push하지 않고 원인과 현재 ref 상태를 보고한다. 이미 원격에 존재하는 태그는 수정하지 않는다.
 
 ## workflow와 권한
 
@@ -60,7 +61,7 @@ GitHub Actions에서 실패 job·단계·로그와 `github-pages` 환경의 depl
 - 일시적 실패는 원인을 확인한 뒤 같은 태그의 실패 job을 재실행하고 공개 검증을 다시 수행한다. 이미 있는 정식 Release/첨부 파일은 덮어쓰지 않는다.
 - 사용자가 이전 성공 버전 복구를 지시하면 해당 태그의 성공 workflow 전체를 재실행하고 같은 방식으로 공개 상태를 검증한다. 태그 자체는 이동하지 않는다.
 - 영구 수정은 별도 이슈/PR 또는 revert 후 새 버전으로 진행한다. 잘못된 태그를 강제로 고쳐 재배포하지 않는다.
-- 첫 배포 전에는 복구할 성공 버전이 없다. 실패를 공개하고 수정/재실행 계획을 정리하며 성공 버전이 생긴 것처럼 보고하지 않는다.
+- 현재 확인된 첫 성공 버전은 `v0.1.0`이다. 후속 배포가 실패하면 공개 상태와 실패 단계를 확인하고, 사용자 복구 지시에 따라 이 성공 workflow의 재실행 여부를 결정한다.
 
 ## Pages 설정을 다시 확인할 때
 
