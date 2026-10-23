@@ -1,5 +1,13 @@
 # 툴밋 현재 상태
 
+## 2026-10-23 #18 배포 구성 구현·검증 완료 · PR 초안 승인 대기
+
+- 사용자 `배포 진행하자`를 이슈 등록 후 별도 구현 시작 지시로 확인하고 최신 main `f8678c6800b1b32f5bdc0eb343c9153d772f86a9`의 전용 worktree `C:/Users/cksrj/.codex/worktrees/issue-18-pages-release/u-solve`와 Development 연결 `chore/18-pages-release`에서 구현했다. 원래 공유 폴더와 #8 변경은 보존했다.
+- 태그 전용 workflow를 build/deploy/release로 나눠 최소 권한을 적용했다. 안정 주석 태그·버전·이벤트 SHA·main 포함을 검사하고 시험/빌드→manifest·묶음→Pages→공개 manifest/전체 자산 SHA256 검증→성공 Release 순서로 진행한다. 제품·backend/shared·#8 자료는 변경하지 않았다.
+- 승인된 구현 범위로 Pages Actions 소스와 HTTPS를 최초 설정하고 github-pages 환경에 `v*` 태그 한 규칙만 남겼다. Pages 생성이 자동 추가한 main 허용 규칙은 재조회 후 제거했다. 현재 태그·deployment·Release는 0건이며 예정 공개 주소는 HTTP 404다. 실제 사이트 배포는 아직 하지 않았다.
+- npm test PASS: 릴리스 33+정책 3, 프론트 182, Python 13, 정적 /toolmeet/·HTTP 통합 15조합. npm run build·공식 체크섬 검증 actionlint 1.7.12·diff 검사 PASS다. GitHub 원격 CI·실제 태그 실행·공개 CDN/실제 브라우저 흐름은 미검증이다. 추가 YAML 의존성은 시험용 개발 의존성이며 페이지 런타임에는 넣지 않는다.
+- 다음은 전체 PR 초안의 사람 승인 뒤 PR 등록이다. 머지·실제 버전 태그/배포는 각 단계의 승인을 따른다. 첫 버전 v0.1.0은 제안이며 승인된 릴리스 main SHA는 구성 머지 후 확정한다.
+
 ## 2026-10-14 배경 모션·기본 화면 #15 · 구현 완료, PR 초안 승인 대기
 
 - 사용자 `오케이 #15 구현 시작해줘. 다 되면 로컬로 띄워줘.` 승인으로 #6/PR #16이 포함된 최신 main `297d3182307c9c386dc97e1663794f14c3667438`에서 이슈 연결 `feat/15-home-background`와 별도 worktree를 준비했다. 기존 #6 구현과 다른 채팅의 공유 폴더 변경을 보존했다.
