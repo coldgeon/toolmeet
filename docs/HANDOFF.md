@@ -1,12 +1,12 @@
 # 툴밋 인계
 
-## 2026-10-23 #20 v0.1.0 배포 확인 · PR #21 검토 중
+## 2026-10-23 #20 v0.1.0 배포 확인 · PR #22 검토 중
 
 - [PR #19](https://github.com/coldgeon/toolmeet/pull/19) 병합 커밋 `9fc3b3c2bce711bf9dab5c7f6663140da7d5c101`의 main CI 성공과 미사용 `v0.1.0` 태그를 확인했다. 별도 깨끗한 worktree에서 주석 태그를 만들고 `node scripts/validate_release.mjs v0.1.0` 통과 후 push했다. 공유 main checkout의 미커밋 문서는 건드리지 않았다.
 - [릴리스 실행](https://github.com/coldgeon/toolmeet/actions/runs/39963182463)의 build·deploy·release가 모두 성공했고 정식 [GitHub Release](https://github.com/coldgeon/toolmeet/releases/tag/v0.1.0)에 버전 묶음이 있다. [Pages 홈](https://coldgeon.github.io/toolmeet/)·[뉴스](https://coldgeon.github.io/toolmeet/news/)가 HTTP 200이며 공개 [`release.json`](https://coldgeon.github.io/toolmeet/release.json)의 tag/version/commit/mode는 `v0.1.0`/`0.1.0`/위 SHA/`static-mock`이다. workflow의 공개 manifest·전체 파일 SHA256 대조도 통과했다.
 - 실제 공개 브라우저에서 홈 mock 고지, 예시 질문 클릭 후 조건 확인 대화, 뉴스 목록과 상세의 가상 소식 고지·질문 링크를 확인했다. 실제 기기·스크린리더·전체 추천/방향 확인 흐름은 이번 브라우저 확인 범위 밖이다. 실제 AI·수집·Python API는 배포하지 않았다.
 - 문서 브랜치에서 `npm ci --ignore-scripts --no-audit --no-fund`, 전체 `npm test`(릴리스/정책 36, 프론트 182, Python 13, 정적·HTTP 통합), `npm run build`, `git diff --check`, `npm run task:overlap`이 통과했다. 열린 PR과 변경 경로 중복은 없고 기준 `origin/main`은 위 병합 SHA 그대로다.
-- [이슈 #20](https://github.com/coldgeon/toolmeet/issues/20)의 배포 결과 기록은 [PR #21](https://github.com/coldgeon/toolmeet/pull/21)에서 검토 중이다. 브랜치는 `seongwwww/issue-20-release-status`, 기준 main은 위 SHA다. Discord 인계 채널 `#codex` 조회 시 이 이슈·릴리스와 관련된 기존 보고가 없었다. 문서 기록 후 한 건 보고한다.
+- [이슈 #20](https://github.com/coldgeon/toolmeet/issues/20)의 배포 결과 기록은 [PR #22](https://github.com/coldgeon/toolmeet/pull/22)에서 검토 중이다. 브랜치는 `docs/20-release-status`, 기준 main은 위 SHA다. 처음 생성한 [PR #21](https://github.com/coldgeon/toolmeet/pull/21)은 브랜치 이름이 workflow-policy 형식에 맞지 않아 닫고 같은 변경을 규칙에 맞는 브랜치로 다시 올렸다. Discord 인계 채널 `#codex` 조회 시 이 이슈·릴리스와 관련된 기존 보고가 없었다. 문서 기록 후 한 건 보고한다.
 - 다음 담당: PR 검토자는 문서와 CI를 확인한다. 실제 휴대폰/스크린리더·전체 공개 화면 흐름은 별도 검증 작업으로 남긴다. PR 머지는 이번 지시 범위 밖이다.
 
 ## 2026-10-23 #18 구현·Pages 최초 설정 완료 · PR 준비
